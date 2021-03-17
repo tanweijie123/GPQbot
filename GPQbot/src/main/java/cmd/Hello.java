@@ -23,7 +23,7 @@ public class Hello extends ListenerAdapter {
         if (e.getAuthor().isBot())
             return;
         String msg = e.getMessage().getContentRaw();
-        System.out.println(e.getAuthor().getName() + " => " + msg);
+        System.out.printf("%s(%s) => %s\n", e.getGuild().getMember(e.getAuthor()).getNickname(), e.getAuthor().getAsTag() , msg);
         if (msg.startsWith("!nyan")) {
             e.getChannel().sendMessage("nyaaa~").queue();
             processRequest(e);
