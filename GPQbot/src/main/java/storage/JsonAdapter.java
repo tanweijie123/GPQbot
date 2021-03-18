@@ -1,8 +1,9 @@
-package Storage;
+package storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import model.CurrentGPQList;
+import data.CurrentGPQList;
+import data.CurrentUserList;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -11,14 +12,23 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class JsonAdapter {
-    public static boolean saveCurrentGPQList(CurrentGPQList content) {
+class JsonAdapter {
+    static boolean saveCurrentGPQList(CurrentGPQList content) {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
         Gson gson = builder.create();
 
         String exportString = gson.toJson(content);
         return writeToFile(new File("gpq_current.json"), exportString);
+    }
+
+    static boolean saveCurrentUserList(CurrentUserList content) {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setPrettyPrinting();
+        Gson gson = builder.create();
+
+        String exportString = gson.toJson(content);
+        return writeToFile(new File("user_account.json"), exportString);
     }
 
     private static boolean writeToFile(File file, String exportString) {
@@ -35,14 +45,20 @@ public class JsonAdapter {
         }
     }
 
-    public static Optional<CurrentGPQList> loadCurrentGPQList() {
+    static Optional<CurrentGPQList> loadCurrentGPQList() {
         File file = new File("gpq_current.json");
-        if (!file.exists()) {
-            CurrentGPQList list = new CurrentGPQList();
-            saveCurrentGPQList(list);
-            return Optional.of(list);
-        }
+        Optional<CurrentGPQList> gpqList = loadFromFile(file, CurrentGPQList.class);
+        return gpqList.or( () -> Optional.of(new CurrentGPQList()) );
 
+    }
+
+    static Optional<CurrentUserList> loadCurrentUserList() {
+        File file = new File("user_account.json");
+        Optional<CurrentUserList> userList = loadFromFile(file, CurrentUserList.class);
+        return userList.or( () -> Optional.of(new CurrentUserList()) );
+    }
+
+    private static <E> Optional<E> loadFromFile(File file, Class<E> classFile) {
         try {
             Scanner readFile = new Scanner(file);
             String importString = readFile.useDelimiter("\\Z").next();
@@ -52,11 +68,10 @@ public class JsonAdapter {
             builder.setPrettyPrinting();
             Gson gson = builder.create();
 
-            return Optional.of(gson.fromJson(importString, CurrentGPQList.class));
+            return Optional.of(gson.fromJson(importString, classFile));
         } catch (IOException | NoSuchElementException e) {
             return Optional.empty(); //this should not happen.
         }
-
     }
 
 }

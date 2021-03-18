@@ -1,10 +1,10 @@
-package model;
+package data;
 
 import net.dv8tion.jda.internal.utils.tuple.MutablePair;
+import storage.Storage;
 
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Optional;
 
 public class CurrentGPQList {
     private HashMap<Long, URL> currentList;
@@ -15,7 +15,7 @@ public class CurrentGPQList {
 
     public boolean add(MutablePair<Long, URL> toAdd) {
         currentList.put(toAdd.getLeft(), toAdd.getRight());
-        Storage.JsonAdapter.saveCurrentGPQList(this);
+        Storage.saveCurrentGPQList(this);
         return true;
     }
 
@@ -26,7 +26,7 @@ public class CurrentGPQList {
 
     public boolean remove(Long key) {
         currentList.remove(key);
-        Storage.JsonAdapter.saveCurrentGPQList(this);
+        Storage.saveCurrentGPQList(this);
         return true;
     }
 }

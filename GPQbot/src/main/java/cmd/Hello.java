@@ -1,6 +1,7 @@
 package cmd;
 
-import logic.Data;
+import data.Data;
+import model.UserAccount;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
@@ -69,6 +70,45 @@ public class Hello extends ListenerAdapter {
                 } else {
                     e.getChannel().sendMessage("The latest GPQ registration post is here! \n" + ret).queue();
                 }
+            } else if (recv[1].equalsIgnoreCase("setup")) {
+                long userID = e.getAuthor().getIdLong();
+                UserAccount ua = new UserAccount(userID);
+                Data.currentUserList.add(new MutablePair<>(userID, ua));
+                ua.setIgn(e.getGuild().getMemberById(userID).getNickname());
+                e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
+            } else if (recv[1].equalsIgnoreCase("whoami")) {
+                long userID = e.getAuthor().getIdLong();
+                UserAccount ua = Data.currentUserList.getByUserKey(userID);
+
+                if (ua == null) {
+                    e.getChannel().sendMessage("Have I seen you before? " +
+                            "Try \"!nyan setup\" if this is the first time you're talking to me nyaa~\n").queue();
+                } else {
+                    e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
+                }
+
+            } else if (recv[1].equalsIgnoreCase("floor")) {
+                if (recv.length < 2) {
+                    e.getChannel().sendMessage("Huhh? Where is your floor? (Eg. \"!nyan floor 50\"").queue();
+                }
+
+                long userID = e.getAuthor().getIdLong();
+                UserAccount ua = Data.currentUserList.getByUserKey(userID);
+
+                if (ua == null) {
+                    e.getChannel().sendMessage("Have I seen you before? " +
+                            "Try \"!nyan setup\" if this is the first time you're talking to me nyaa~\n").queue();
+                } else {
+                    try {
+                        int floor = Integer.parseInt(recv[2]);
+                        ua.setFloor(floor);
+                        e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
+                    } catch (NumberFormatException ev) {
+                        e.getChannel().sendMessage("Huhh? Your floor is not a number? Idk how to use it nyaa (Eg. \"!nyan floor 50\"").queue();
+                    }
+                }
+            } else {
+                e.getChannel().sendMessage("nyaa? I have never heard of this before :X").queue();
             }
         } else if (recv.length == 1) {
             e.getChannel().sendMessage("nyaaa~").queue();

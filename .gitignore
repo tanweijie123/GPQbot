@@ -4,4 +4,5 @@
 *.bin
 *.xml
 GPQbot/token
-
+GPQbot/gpq_current.json
+GPQbot/user_account.json

@@ -1,9 +1,9 @@
-import Storage.JsonAdapter;
 import cmd.Hello;
-import logic.Data;
-import model.CurrentGPQList;
+import data.Data;
+import data.CurrentGPQList;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import storage.Storage;
 
 import java.io.File;
 import java.util.Scanner;
@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class App {
     public static void main(String[] args) {
         try {
-            Data.currentGPQList = JsonAdapter.loadCurrentGPQList().orElse(new CurrentGPQList());
+            Data.init();
 
             Scanner sc = new Scanner(new File("token"));
             String token = sc.nextLine();
