@@ -35,6 +35,8 @@ public class UserAccount {
     }
 
     public void setIgn(String ign) {
+        if (ign == null)
+            ign = "";
         this.ign = ign;
         Data.currentUserList.save();
     }

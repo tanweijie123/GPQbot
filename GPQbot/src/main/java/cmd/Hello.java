@@ -15,7 +15,8 @@ import javax.annotation.Nonnull;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +43,7 @@ public class Hello extends ListenerAdapter {
 
     public void processRequest(MessageReceivedEvent e) {
 
-        String toProcess = String.format("%s(%s) => %s", e.getMember().getNickname(), e.getAuthor().getAsTag() , e.getMessage().getContentRaw());
+        String toProcess = String.format("%s(%s) => %s", e.getMember().getEffectiveName(), e.getAuthor().getAsTag() , e.getMessage().getContentRaw());
         LOGGER.log(Level.INFO, toProcess);
         System.out.println(toProcess);
         String[] recv = e.getMessage().getContentRaw().split(" ");
@@ -75,7 +76,7 @@ public class Hello extends ListenerAdapter {
                             EmbedBuilder eb = new EmbedBuilder();
                             eb.setTitle("Register for GPQ Day!");
                             eb.setColor(java.awt.Color.GREEN);
-                            eb.setFooter("This request is made by " + e.getMember().getNickname() + " on " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                            eb.setFooter("This request is made by " + e.getMember().getEffectiveName() + " on " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
                             Message msg = e.getChannel().sendMessage(eb.build()).complete();
                             msg.addReaction("\uD83C\uDDF2").queue();
                             msg.addReaction("\uD83C\uDDF9").queue();
@@ -110,7 +111,7 @@ public class Hello extends ListenerAdapter {
 
                 permission.ifPresentOrElse(
                         x -> {
-                            Message msg = e.getChannel().sendMessage("Closing registration for " + ret + " and getting participants for today (" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEEE")) + ")?").complete();
+                            Message msg = e.getChannel().sendMessage("Closing registration for " + ret + " and getting participants for today (" + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("EEEE")) + ")?").complete();
                             msg.addReaction("U+2705").queue();
                             msg.addReaction("U+274C").queue();
                         },
@@ -119,8 +120,6 @@ public class Hello extends ListenerAdapter {
                         }
                 );
                 return;
-            } else if (recv[1].equalsIgnoreCase("update")) {
-                e.getChannel().sendMessage("Update the form here~ \n https://forms.gle/3Z4hXitJRWi7hmwW9").queue();
             } else if (recv[1].equalsIgnoreCase("reg")) {
                 String ret = Data.currentGPQList.getByGuildKey(e.getGuild().getIdLong());
                 if (ret == null) {
@@ -132,11 +131,11 @@ public class Hello extends ListenerAdapter {
                 long userID = e.getAuthor().getIdLong();
                 UserAccount ua = new UserAccount(userID);
                 Data.currentUserList.add(new MutablePair<>(userID, ua));
-                ua.setIgn(e.getMember().getNickname());
+                ua.setIgn(e.getMember().getEffectiveName());
                 e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
             } else if (recv[1].equalsIgnoreCase("whoami")) {
                 long userID = e.getAuthor().getIdLong();
-                UserAccount ua = Data.currentUserList.getByUserKey(userID, e.getMember().getNickname());
+                UserAccount ua = Data.currentUserList.getByUserKey(userID, e.getMember().getEffectiveName());
 
                 if (ua == null) {
                     e.getChannel().sendMessage("Have I seen you before? " +
@@ -152,7 +151,7 @@ public class Hello extends ListenerAdapter {
                 }
 
                 long userID = e.getAuthor().getIdLong();
-                UserAccount ua = Data.currentUserList.getByUserKey(userID, e.getMember().getNickname());
+                UserAccount ua = Data.currentUserList.getByUserKey(userID, e.getMember().getEffectiveName());
 
                 if (ua == null) {
                     e.getChannel().sendMessage("Have I seen you before? " +
@@ -160,10 +159,16 @@ public class Hello extends ListenerAdapter {
                 } else {
                     try {
                         int floor = Integer.parseInt(recv[2]);
-                        ua.setFloor(floor);
-                        e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
+                        if (floor < 0) {
+                            e.getChannel().sendMessage("Oof.. You can't even beat a snail?").queue();
+                        } else if (floor > 70) {
+                            e.getChannel().sendMessage("Woahh.. You are strong. Too strong in fact.").queue();
+                        } else {
+                            ua.setFloor(floor);
+                            e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
+                        }
                     } catch (NumberFormatException ev) {
-                        e.getChannel().sendMessage("Huhh? Your floor is not a number? Idk how to use it nyaa (Eg. \"" + BOT_PREFIX + " floor 50\"").queue();
+                        e.getChannel().sendMessage("Huhh? Your floor is not a number? Idk how to use it nyaa (Eg. \"" + BOT_PREFIX + " floor 50\")").queue();
                     }
                 }
             } else {
@@ -192,7 +197,7 @@ public class Hello extends ListenerAdapter {
 
                     permission.ifPresent(
                             x -> {
-                                event.getChannel().sendMessage("Confirmed GPQ at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
+                                event.getChannel().sendMessage("Confirmed GPQ at " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
 
                                 String creationMsgId = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong());
                                 creationMsgId = creationMsgId.substring(creationMsgId.lastIndexOf("/") + 1);
@@ -206,15 +211,15 @@ public class Hello extends ListenerAdapter {
 
                                 List<MessageReaction> ebReact = actualEb.getReactions();
 
-                                int choice = LocalDateTime.now().getDayOfWeek().getValue() - 1;
+                                int choice = ZonedDateTime.now(ZoneId.of("GMT+8")).getDayOfWeek().getValue() - 1;
                                 List<User> usrList = ebReact.get(choice).retrieveUsers().stream().collect(Collectors.toList());
 
                                 String allName = "Participants (" + (usrList.size() - 1) + "): \n";
                                 for (User u : usrList) {
                                     if (!u.getName().equals(event.getJDA().getSelfUser().getName())) {
-                                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getNickname());
+                                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getEffectiveName());
                                         if (ua == null) {
-                                            allName += event.getGuild().getMember(u).getNickname() + "\n";
+                                            allName += event.getGuild().getMember(u).getEffectiveName() + "\n";
                                         } else {
                                             if (ua.getFloor() > 0) {
                                                 allName += ua.getIgn() + "/" + ua.getFloor() + "\n";

@@ -25,7 +25,7 @@ public class CurrentUserList {
      */
     public UserAccount getByUserKey(Long key, String ign) {
         UserAccount ua = currentList.get(key);
-        if (ua != null && ign != null && !ua.getIgn().equals(ign))
+        if (ua != null && !ua.getIgn().equals(ign))
             ua.setIgn(ign);
         return ua;
     }

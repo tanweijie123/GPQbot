@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
@@ -21,7 +23,7 @@ public class App {
         FileHandler fh;
 
         try {
-            File file = new File("log/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss")) + ".log");
+            File file = new File("log/" + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss")) + ".log");
             file.createNewFile();
             fh = new FileHandler(file.getPath());
             LOGGER.addHandler(fh);
