@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Hello extends ListenerAdapter {
@@ -35,31 +36,60 @@ public class Hello extends ListenerAdapter {
     }
 
     public void processRequest(MessageReceivedEvent e) {
-        System.out.printf("%s(%s) => %s\n", e.getGuild().getMember(e.getAuthor()).getNickname(), e.getAuthor().getAsTag() , e.getMessage().getContentRaw());
+        System.out.printf("%s(%s) => %s\n", e.getMember().getNickname(), e.getAuthor().getAsTag() , e.getMessage().getContentRaw());
         String[] recv = e.getMessage().getContentRaw().split(" ");
         if (recv.length > 1) {
-            if (recv[1].equalsIgnoreCase("new")) {
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setTitle("Register for GPQ Day!");
-                eb.setColor(java.awt.Color.GREEN);
-                eb.setFooter("This request is made by " + e.getGuild().getMember(e.getAuthor()).getNickname() + " on " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
-                Message msg = e.getChannel().sendMessage(eb.build()).complete();
-                msg.addReaction("\uD83C\uDDF2").queue();
-                msg.addReaction("\uD83C\uDDF9").queue();
-                msg.addReaction("\uD83C\uDDFC").queue();
-                msg.addReaction("\uD83C\uDDED").queue();
-                msg.addReaction("\uD83C\uDDEB").queue();
-                msg.addReaction("\uD83C\uDDF8").queue();
-                msg.addReaction("\uD83D\uDE34").queue();
-                msg.addReaction("U+2705").queue();
-                msg.pin().queue();
 
-                try {
-                    MutablePair<Long, URL> p = new MutablePair<>(msg.getGuild().getIdLong(), new URL(msg.getJumpUrl()));
-                    Data.currentGPQList.add(p);
-                } catch (MalformedURLException malformedURLException) {
-                    System.err.println("Unable to convert " + msg.getJumpUrl() + "into URL and store into GPQ List");
-                }
+            if (recv[1].equalsIgnoreCase("help")) {
+
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle("NyanBot Help");
+                eb.setColor(java.awt.Color.CYAN);
+                eb.addBlankField(true);
+                eb.appendDescription("These are the commands for NyanBot nyaaa~\n");
+                eb.addField("new", "create a new GPQ registration (only for mods)", false);
+                eb.addField("reg", "send the link to the post of the current registration", false);
+                eb.addField("setup", "register your discord with NyanBot", false);
+                eb.addField("whoami", "get what NyanBot knows about you.", false);
+                eb.addField("floor", "update your floor", false);
+                eb.addBlankField(false);
+                eb.setFooter("How do you use it? Simply send \"!nyan <command>\" and you can talk to me :)");
+
+                e.getChannel().sendMessage(eb.build()).queue();
+
+            } else if (recv[1].equalsIgnoreCase("new")) {
+
+                Optional permission = e.getMember().getRoles().stream().filter(x -> x.getName().equals("Tokyo") || x.getName().equals("Professor")).findFirst();
+
+                permission.ifPresentOrElse(
+                        x -> {
+                            EmbedBuilder eb = new EmbedBuilder();
+                            eb.setTitle("Register for GPQ Day!");
+                            eb.setColor(java.awt.Color.GREEN);
+                            eb.setFooter("This request is made by " + e.getMember().getNickname() + " on " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+                            Message msg = e.getChannel().sendMessage(eb.build()).complete();
+                            msg.addReaction("\uD83C\uDDF2").queue();
+                            msg.addReaction("\uD83C\uDDF9").queue();
+                            msg.addReaction("\uD83C\uDDFC").queue();
+                            msg.addReaction("\uD83C\uDDED").queue();
+                            msg.addReaction("\uD83C\uDDEB").queue();
+                            msg.addReaction("\uD83C\uDDF8").queue();
+                            msg.addReaction("\uD83D\uDE34").queue();
+                            msg.addReaction("U+2705").queue();
+                            msg.pin().queue();
+
+                            try {
+                                MutablePair<Long, URL> p = new MutablePair<>(msg.getGuild().getIdLong(), new URL(msg.getJumpUrl()));
+                                Data.currentGPQList.add(p);
+                            } catch (MalformedURLException malformedURLException) {
+                                System.err.println("Unable to convert " + msg.getJumpUrl() + "into URL and store into GPQ List");
+                            }
+
+                        },
+                        () -> {
+                            e.getChannel().sendMessage("You do not have the permission to perform this...").queue();
+                        }
+                );
 
             } else if (recv[1].equalsIgnoreCase("update")) {
                 e.getChannel().sendMessage("Update the form here~ \n https://forms.gle/3Z4hXitJRWi7hmwW9").queue();
@@ -74,7 +104,7 @@ public class Hello extends ListenerAdapter {
                 long userID = e.getAuthor().getIdLong();
                 UserAccount ua = new UserAccount(userID);
                 Data.currentUserList.add(new MutablePair<>(userID, ua));
-                ua.setIgn(e.getGuild().getMemberById(userID).getNickname());
+                ua.setIgn(e.getMember().getNickname());
                 e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
             } else if (recv[1].equalsIgnoreCase("whoami")) {
                 long userID = e.getAuthor().getIdLong();
@@ -129,32 +159,50 @@ public class Hello extends ListenerAdapter {
 
                 if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
                    //reacted to Register message
-                    Message msg = event.getChannel().sendMessage("Finalising? " + reactedMsg.getJumpUrl()).complete();
-                    msg.addReaction("U+2705").queue();
-                    msg.addReaction("U+274C").queue();
+
+                    Optional permission = event.getMember().getRoles().stream().filter(x -> x.getName().equals("Tokyo") || x.getName().equals("Professor")).findFirst();
+
+                    permission.ifPresentOrElse(
+                            x -> {
+                                Message msg = event.getChannel().sendMessage("Finalising? " + reactedMsg.getJumpUrl()).complete();
+                                msg.addReaction("U+2705").queue();
+                                msg.addReaction("U+274C").queue();
+                            },
+                            () -> {
+                                event.getChannel().sendMessage("You do not have the permission to perform this...").queue();
+                            }
+                    );
                 }
             } else if (reactedMsg.getContentRaw().startsWith("Finalising?")) {
 
                 if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
-                    event.getChannel().sendMessage("Confirmed GPQ at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
 
-                    Message actualEb = event.getChannel().getHistoryAround(reactedMsg.getContentRaw().substring(reactedMsg.getContentRaw().lastIndexOf("/") + 1),1).complete().getRetrievedHistory().get(0);
-                    if (actualEb.isPinned())
-                        actualEb.unpin().queue();
+                    Optional permission = event.getMember().getRoles().stream().filter(x -> x.getName().equals("Tokyo") || x.getName().equals("Professor")).findFirst();
 
-                    Data.currentGPQList.remove(event.getGuild().getIdLong()); //once finalised, it will be removed from current.
+                    permission.ifPresent(
+                            x -> {
+                                event.getChannel().sendMessage("Confirmed GPQ at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
 
-                    List<MessageReaction> ebReact = actualEb.getReactions();
+                                //TODO: retrieve current from currentGPQ instead
+                                Message actualEb = event.getChannel().getHistoryAround(reactedMsg.getContentRaw().substring(reactedMsg.getContentRaw().lastIndexOf("/") + 1), 1).complete().getRetrievedHistory().get(0);
+                                if (actualEb.isPinned())
+                                    actualEb.unpin().queue();
 
-                    int choice = LocalDateTime.now().getDayOfWeek().getValue() - 1;
-                    List<User> usrList = ebReact.get(choice).retrieveUsers().stream().collect(Collectors.toList());
+                                Data.currentGPQList.remove(event.getGuild().getIdLong()); //once finalised, it will be removed from current.
 
-                    String allName = "Participants (" + (usrList.size() - 1) + "): \n";
-                    for (User u : usrList) {
-                        if (!u.getName().equals(event.getJDA().getSelfUser().getName()))
-                            allName += event.getGuild().getMember(u).getNickname() + "\n";
-                    }
-                    event.getChannel().sendMessage(allName).queue();
+                                List<MessageReaction> ebReact = actualEb.getReactions();
+
+                                int choice = LocalDateTime.now().getDayOfWeek().getValue() - 1;
+                                List<User> usrList = ebReact.get(choice).retrieveUsers().stream().collect(Collectors.toList());
+
+                                String allName = "Participants (" + (usrList.size() - 1) + "): \n";
+                                for (User u : usrList) {
+                                    if (!u.getName().equals(event.getJDA().getSelfUser().getName()))
+                                        allName += event.getGuild().getMember(u).getNickname() + "\n";
+                                }
+                                event.getChannel().sendMessage(allName).queue();
+                            }
+                    );
 
                 }
 

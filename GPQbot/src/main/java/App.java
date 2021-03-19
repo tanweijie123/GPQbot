@@ -17,6 +17,7 @@ public class App {
             String token = sc.nextLine();
             JDA jda = JDABuilder.createDefault(token).build();
             jda.addEventListener(new Hello());
+            jda.awaitReady();
 
         } catch (Exception e) {
             System.out.println("Bot Token Failed!");
