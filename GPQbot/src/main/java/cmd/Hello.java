@@ -20,9 +20,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Hello extends ListenerAdapter {
+
+    private static final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
@@ -36,7 +40,10 @@ public class Hello extends ListenerAdapter {
     }
 
     public void processRequest(MessageReceivedEvent e) {
-        System.out.printf("%s(%s) => %s\n", e.getMember().getNickname(), e.getAuthor().getAsTag() , e.getMessage().getContentRaw());
+
+        String toProcess = String.format("%s(%s) => %s", e.getMember().getNickname(), e.getAuthor().getAsTag() , e.getMessage().getContentRaw());
+        LOGGER.log(Level.INFO, toProcess);
+        System.out.println(toProcess);
         String[] recv = e.getMessage().getContentRaw().split(" ");
         if (recv.length > 1) {
 
@@ -75,7 +82,6 @@ public class Hello extends ListenerAdapter {
                             msg.addReaction("\uD83C\uDDEB").queue();
                             msg.addReaction("\uD83C\uDDF8").queue();
                             msg.addReaction("\uD83D\uDE34").queue();
-                            msg.addReaction("U+2705").queue();
                             msg.pin().queue();
 
                             try {
@@ -91,6 +97,26 @@ public class Hello extends ListenerAdapter {
                         }
                 );
 
+            } else if (recv[1].equalsIgnoreCase("close")) {
+                String ret = Data.currentGPQList.getByGuildKey(e.getGuild().getIdLong());
+                if (ret == null) {
+                    e.getChannel().sendMessage("No opened registration to close").queue();
+                    return;
+                }
+
+                Optional permission = e.getMember().getRoles().stream().filter(x -> x.getName().equals("Tokyo") || x.getName().equals("Professor")).findFirst();
+
+                permission.ifPresentOrElse(
+                        x -> {
+                            Message msg = e.getChannel().sendMessage("Closing registration for " + ret + " and getting participants for today (" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("EEEE")) + ")?").complete();
+                            msg.addReaction("U+2705").queue();
+                            msg.addReaction("U+274C").queue();
+                        },
+                        () -> {
+                            e.getChannel().sendMessage("You do not have the permission to perform this...").queue();
+                        }
+                );
+                return;
             } else if (recv[1].equalsIgnoreCase("update")) {
                 e.getChannel().sendMessage("Update the form here~ \n https://forms.gle/3Z4hXitJRWi7hmwW9").queue();
             } else if (recv[1].equalsIgnoreCase("reg")) {
@@ -113,9 +139,14 @@ public class Hello extends ListenerAdapter {
                 if (ua == null) {
                     e.getChannel().sendMessage("Have I seen you before? " +
                             "Try \"!nyan setup\" if this is the first time you're talking to me nyaa~\n").queue();
-                } else {
-                    e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
+                    return;
                 }
+
+                if (!ua.getIgn().equalsIgnoreCase(e.getMember().getNickname())) {
+                    ua.setIgn(e.getMember().getNickname());
+                }
+
+                e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
 
             } else if (recv[1].equalsIgnoreCase("floor")) {
                 if (recv.length < 2) {
@@ -155,25 +186,7 @@ public class Hello extends ListenerAdapter {
 
         if (reactedMsg.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) { //user reacted to message sent by this bot
 
-            if (reactedMsg.getEmbeds().size() > 0 && reactedMsg.getEmbeds().get(0).getTitle().equals("Register for GPQ Day!")) {
-
-                if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
-                   //reacted to Register message
-
-                    Optional permission = event.getMember().getRoles().stream().filter(x -> x.getName().equals("Tokyo") || x.getName().equals("Professor")).findFirst();
-
-                    permission.ifPresentOrElse(
-                            x -> {
-                                Message msg = event.getChannel().sendMessage("Finalising? " + reactedMsg.getJumpUrl()).complete();
-                                msg.addReaction("U+2705").queue();
-                                msg.addReaction("U+274C").queue();
-                            },
-                            () -> {
-                                event.getChannel().sendMessage("You do not have the permission to perform this...").queue();
-                            }
-                    );
-                }
-            } else if (reactedMsg.getContentRaw().startsWith("Finalising?")) {
+            if (reactedMsg.getContentRaw().startsWith("Finalising?")) {
 
                 if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
 
@@ -197,10 +210,19 @@ public class Hello extends ListenerAdapter {
 
                                 String allName = "Participants (" + (usrList.size() - 1) + "): \n";
                                 for (User u : usrList) {
-                                    if (!u.getName().equals(event.getJDA().getSelfUser().getName()))
-                                        allName += event.getGuild().getMember(u).getNickname() + "\n";
+                                    if (!u.getName().equals(event.getJDA().getSelfUser().getName())) {
+                                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong());
+                                        if (ua == null) {
+                                            allName += event.getGuild().getMember(u).getNickname() + "\n";
+                                        } else {
+                                            allName += ua.getIgn() + "/" + ua.getFloor() + "\n";
+                                        }
+                                    }
                                 }
                                 event.getChannel().sendMessage(allName).queue();
+
+                                //TODO: send excel output
+                                //event.getUser().openPrivateChannel().flatMap(hi -> hi.sendMessage("Hello~")).queue();
                             }
                     );
 
