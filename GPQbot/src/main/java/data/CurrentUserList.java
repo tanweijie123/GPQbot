@@ -23,8 +23,11 @@ public class CurrentUserList {
     /**
      * Gets the UserAccount using the UserID key
      */
-    public UserAccount getByUserKey(Long key) {
-        return currentList.get(key);
+    public UserAccount getByUserKey(Long key, String ign) {
+        UserAccount ua = currentList.get(key);
+        if (ua != null && ign != null && !ua.getIgn().equals(ign))
+            ua.setIgn(ign);
+        return ua;
     }
 
     public boolean update(MutablePair<Long, UserAccount> toUpdate) {

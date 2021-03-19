@@ -27,13 +27,14 @@ import java.util.stream.Collectors;
 public class Hello extends ListenerAdapter {
 
     private static final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static final String BOT_PREFIX = "!nyan";
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         if (e.getAuthor().isBot())
             return;
 
-        if (e.getMessage().getContentRaw().startsWith("!nyan")) {
+        if (e.getMessage().getContentRaw().startsWith(BOT_PREFIX)) {
             //e.getChannel().sendMessage("Link => " + e.getMessage().getJumpUrl()).queue();
             processRequest(e);
         }
@@ -55,12 +56,13 @@ public class Hello extends ListenerAdapter {
                 eb.addBlankField(true);
                 eb.appendDescription("These are the commands for NyanBot nyaaa~\n");
                 eb.addField("new", "create a new GPQ registration (only for mods)", false);
+                eb.addField("close", "close the current GPQ registration (only for mods)", false);
                 eb.addField("reg", "send the link to the post of the current registration", false);
                 eb.addField("setup", "register your discord with NyanBot", false);
                 eb.addField("whoami", "get what NyanBot knows about you.", false);
                 eb.addField("floor", "update your floor", false);
                 eb.addBlankField(false);
-                eb.setFooter("How do you use it? Simply send \"!nyan <command>\" and you can talk to me :)");
+                eb.setFooter("How do you use it? Simply send \"" + BOT_PREFIX + " <command>\" and you can talk to me :)");
 
                 e.getChannel().sendMessage(eb.build()).queue();
 
@@ -134,38 +136,34 @@ public class Hello extends ListenerAdapter {
                 e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
             } else if (recv[1].equalsIgnoreCase("whoami")) {
                 long userID = e.getAuthor().getIdLong();
-                UserAccount ua = Data.currentUserList.getByUserKey(userID);
+                UserAccount ua = Data.currentUserList.getByUserKey(userID, e.getMember().getNickname());
 
                 if (ua == null) {
                     e.getChannel().sendMessage("Have I seen you before? " +
-                            "Try \"!nyan setup\" if this is the first time you're talking to me nyaa~\n").queue();
+                            "Try \"" + BOT_PREFIX + " setup\" if this is the first time you're talking to me nyaa~\n").queue();
                     return;
-                }
-
-                if (!ua.getIgn().equalsIgnoreCase(e.getMember().getNickname())) {
-                    ua.setIgn(e.getMember().getNickname());
                 }
 
                 e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
 
             } else if (recv[1].equalsIgnoreCase("floor")) {
                 if (recv.length < 2) {
-                    e.getChannel().sendMessage("Huhh? Where is your floor? (Eg. \"!nyan floor 50\"").queue();
+                    e.getChannel().sendMessage("Huhh? Where is your floor? (Eg. \"" + BOT_PREFIX +" floor 50\"").queue();
                 }
 
                 long userID = e.getAuthor().getIdLong();
-                UserAccount ua = Data.currentUserList.getByUserKey(userID);
+                UserAccount ua = Data.currentUserList.getByUserKey(userID, e.getMember().getNickname());
 
                 if (ua == null) {
                     e.getChannel().sendMessage("Have I seen you before? " +
-                            "Try \"!nyan setup\" if this is the first time you're talking to me nyaa~\n").queue();
+                            "Try \"" + BOT_PREFIX + " setup\" if this is the first time you're talking to me nyaa~\n").queue();
                 } else {
                     try {
                         int floor = Integer.parseInt(recv[2]);
                         ua.setFloor(floor);
                         e.getChannel().sendMessage("Hellonyaa~ This is what I have of you:\n" + ua.toString()).queue();
                     } catch (NumberFormatException ev) {
-                        e.getChannel().sendMessage("Huhh? Your floor is not a number? Idk how to use it nyaa (Eg. \"!nyan floor 50\"").queue();
+                        e.getChannel().sendMessage("Huhh? Your floor is not a number? Idk how to use it nyaa (Eg. \"" + BOT_PREFIX + " floor 50\"").queue();
                     }
                 }
             } else {
@@ -186,7 +184,7 @@ public class Hello extends ListenerAdapter {
 
         if (reactedMsg.getAuthor().getIdLong() == event.getJDA().getSelfUser().getIdLong()) { //user reacted to message sent by this bot
 
-            if (reactedMsg.getContentRaw().startsWith("Finalising?")) {
+            if (reactedMsg.getContentRaw().startsWith("Closing registration for ")) {
 
                 if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
 
@@ -196,8 +194,11 @@ public class Hello extends ListenerAdapter {
                             x -> {
                                 event.getChannel().sendMessage("Confirmed GPQ at " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
 
+                                String creationMsgId = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong());
+                                creationMsgId = creationMsgId.substring(creationMsgId.lastIndexOf("/") + 1);
+
                                 //TODO: retrieve current from currentGPQ instead
-                                Message actualEb = event.getChannel().getHistoryAround(reactedMsg.getContentRaw().substring(reactedMsg.getContentRaw().lastIndexOf("/") + 1), 1).complete().getRetrievedHistory().get(0);
+                                Message actualEb = event.getChannel().getHistoryAround(creationMsgId, 1).complete().getRetrievedHistory().get(0);
                                 if (actualEb.isPinned())
                                     actualEb.unpin().queue();
 
@@ -211,11 +212,15 @@ public class Hello extends ListenerAdapter {
                                 String allName = "Participants (" + (usrList.size() - 1) + "): \n";
                                 for (User u : usrList) {
                                     if (!u.getName().equals(event.getJDA().getSelfUser().getName())) {
-                                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong());
+                                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getNickname());
                                         if (ua == null) {
                                             allName += event.getGuild().getMember(u).getNickname() + "\n";
                                         } else {
-                                            allName += ua.getIgn() + "/" + ua.getFloor() + "\n";
+                                            if (ua.getFloor() > 0) {
+                                                allName += ua.getIgn() + "/" + ua.getFloor() + "\n";
+                                            } else {
+                                                allName += ua.getIgn() + "\n";
+                                            }
                                         }
                                     }
                                 }
