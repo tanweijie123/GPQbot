@@ -48,6 +48,8 @@ public class NewRegistration extends Command {
         msg.addReaction("\uD83D\uDE34").queue();
         msg.pin().queue();
 
+        event.getChannel().sendMessage("@everyone: " + event.getMember().getEffectiveName() + " has created a new registration!").queue();
+
         try {
             MutablePair<Long, URL> p = new MutablePair<>(msg.getGuild().getIdLong(), new URL(msg.getJumpUrl()));
             Data.currentGPQList.add(p);

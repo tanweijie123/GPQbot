@@ -8,4 +8,5 @@ GPQbot/gpq_current.json
 GPQbot/user_account.json
 *.log
 *.lck
-GPQbot/build/lib/*
+GPQbot/build/libs/
+GPQbot/build/tmp/
