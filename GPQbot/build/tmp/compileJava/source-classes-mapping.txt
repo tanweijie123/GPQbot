@@ -10,18 +10,22 @@ model/UserAccount.java
  model.UserAccount
 data/CurrentUserList.java
  data.CurrentUserList
-cmd/Hello.java
- cmd.Hello
+cmd/SetFloor.java
+ cmd.SetFloor
 cmd/CurrentRegistration.java
  cmd.CurrentRegistration
 cmd/WhoAmI.java
  cmd.WhoAmI
 config/Settings.java
  config.Settings
+cmd/CloseRegistration.java
+ cmd.CloseRegistration
 cmd/NewRegistration.java
  cmd.NewRegistration
-cmd/SetFloor.java
- cmd.SetFloor
+cmd/Hello.java
+ cmd.Hello
 App.java
  App
  App$1
+event/ReactionEvent.java
+ event.ReactionEvent
