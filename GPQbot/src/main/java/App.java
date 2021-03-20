@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,10 @@ public class App {
 
             Scanner sc = new Scanner(new File("token"));
             String token = sc.nextLine();
-            JDA jda = JDABuilder.createDefault(token).build();
+            JDA jda = JDABuilder.create(token,
+                    GatewayIntent.GUILD_MEMBERS,
+                    GatewayIntent.GUILD_MESSAGES,
+                    GatewayIntent.GUILD_MESSAGE_REACTIONS).build();
 
             CommandClientBuilder builder = new CommandClientBuilder();
             builder.setOwnerId("419674934072180736");

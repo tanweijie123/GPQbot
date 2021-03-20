@@ -46,6 +46,7 @@ public class ReactionEvent extends ListenerAdapter {
                     String creationMsgId = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong());
                     creationMsgId = creationMsgId.substring(creationMsgId.lastIndexOf("/") + 1);
 
+                    //TODO: check if existingReg is manually deleted.
                     Message actualEb = event.getChannel().getHistoryAround(creationMsgId, 1).complete().getRetrievedHistory().get(0);
                     if (actualEb.isPinned())
                         actualEb.unpin().queue();
