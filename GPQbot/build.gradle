@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    compile 'com.jagrosh:jda-utilities:3.0.5'
     compile 'net.dv8tion:JDA:4.2.0_241'
     compile "org.apache.poi:poi-ooxml:4.1.2"
     implementation 'com.google.code.gson:gson:2.8.6'
