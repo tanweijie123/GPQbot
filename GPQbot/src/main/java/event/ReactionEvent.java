@@ -2,6 +2,7 @@ package event;
 
 import config.Settings;
 import data.Data;
+import data.JobList;
 import model.UserAccount;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
@@ -43,11 +44,10 @@ public class ReactionEvent extends ListenerAdapter {
 
                     event.getChannel().sendMessage("Confirmed GPQ at " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
 
-                    String creationMsgId = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong());
-                    creationMsgId = creationMsgId.substring(creationMsgId.lastIndexOf("/") + 1);
+                    String[] creationMsg = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong()).split("/");
 
                     //TODO: check if existingReg is manually deleted.
-                    Message actualEb = event.getChannel().getHistoryAround(creationMsgId, 1).complete().getRetrievedHistory().get(0);
+                    Message actualEb = event.getGuild().getTextChannelById(creationMsg[5]).getHistoryAround(creationMsg[6], 1).complete().getRetrievedHistory().get(0);
                     if (actualEb.isPinned())
                         actualEb.unpin().queue();
 
@@ -56,21 +56,25 @@ public class ReactionEvent extends ListenerAdapter {
                     List<MessageReaction> ebReact = actualEb.getReactions();
 
                     int choice = ZonedDateTime.now(ZoneId.of("GMT+8")).getDayOfWeek().getValue() - 1;
-                    List<User> usrList = ebReact.get(choice).retrieveUsers().stream().collect(Collectors.toList());
+                    List<User> usrList = ebReact.get(choice).retrieveUsers().stream().filter(x -> !x.isBot()).collect(Collectors.toList());
 
                     String allName = "Participants (" + (usrList.size() - 1) + "): \n";
                     for (User u : usrList) {
-                        if (!u.getName().equals(event.getJDA().getSelfUser().getName())) {
-                            UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getEffectiveName());
-                            if (ua == null) {
-                                allName += event.getGuild().getMember(u).getEffectiveName() + "\n";
-                            } else {
-                                if (ua.getFloor() > 0) {
-                                    allName += ua.getIgn() + "/" + ua.getFloor() + "\n";
-                                } else {
-                                    allName += ua.getIgn() + "\n";
-                                }
+                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getEffectiveName());
+                        if (ua == null) {
+                            allName += event.getGuild().getMember(u).getEffectiveName() + "\n";
+                        } else {
+                            String toAppend = ua.getIgn();
+
+                            if (ua.getJob() != 0) {
+                                toAppend += "/" + JobList.FULL_JOB_LIST[ua.getJob()-1];
                             }
+
+                            if (ua.getFloor() != 0) {
+                                toAppend += "/" + ua.getFloor();
+                            }
+
+                            allName += toAppend + "\n";
                         }
                     }
                     event.getChannel().sendMessage(allName).queue();

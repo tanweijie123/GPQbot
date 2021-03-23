@@ -94,8 +94,11 @@ public class App {
 
     private static void addCommands(CommandClientBuilder builder) {
         builder.addCommand(new WhoAmI());
+        builder.addCommand(new SetJob());
         builder.addCommand(new SetFloor());
+
         builder.addCommand(new CurrentRegistration());
+        builder.addCommand(new GetJobList());
 
         builder.addCommand(new NewRegistration());
         builder.addCommands(new CloseRegistration());

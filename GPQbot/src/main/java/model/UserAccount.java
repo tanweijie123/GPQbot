@@ -1,6 +1,7 @@
 package model;
 
 import data.Data;
+import data.JobList;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class UserAccount {
 
     private Long userId;
     private String ign;
-    private String job;
+    private int job;
     private int floor;
 
     public UserAccount(Long userId) {
@@ -26,7 +27,7 @@ public class UserAccount {
         return this.ign;
     }
 
-    public String getJob() {
+    public int getJob() {
         return this.job;
     }
 
@@ -41,7 +42,7 @@ public class UserAccount {
         Data.currentUserList.save();
     }
 
-    public void setJob(String job) {
+    public void setJob(int job) {
         this.job = job;
         Data.currentUserList.save();
     }
@@ -57,7 +58,7 @@ public class UserAccount {
         if (!(o instanceof UserAccount)) return false;
 
         UserAccount oth = (UserAccount) o;
-        return (oth.ign.equals(this.ign) && oth.job.equals(this.job) && oth.floor == this.floor);
+        return (oth.ign.equals(this.ign) && oth.job == this.job && oth.floor == this.floor);
     }
 
     @Override
@@ -67,6 +68,6 @@ public class UserAccount {
 
     @Override
     public String toString() {
-        return String.format("[%s (%s)] -> %dF", ign, (job == null) ? "<no job added>" : job, floor);
+        return String.format("[%s (%s)] -> %dF", ign, (job == 0) ? "<no job added>" : JobList.FULL_JOB_LIST[job-1], floor);
     }
 }
