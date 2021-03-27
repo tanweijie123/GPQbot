@@ -16,7 +16,7 @@ public class GetJobList extends Command {
     protected void execute(CommandEvent event) {
         event.getMessage().delete().queue();
         event.getChannel()
-                .sendMessage(JobList.getJobListWithNumber() + "\nThis message will be deleted after 60 seconds to prevent clogging.")
+                .sendMessage(JobList.getJobListWithNumber_OneBased() + "\nThis message will be deleted after 60 seconds to prevent clogging.")
                 .complete()
                 .delete().queueAfter(60, TimeUnit.SECONDS);
     }

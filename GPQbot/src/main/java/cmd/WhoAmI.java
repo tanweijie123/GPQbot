@@ -2,10 +2,10 @@ package cmd;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import config.Settings;
 import data.Data;
 import model.UserAccount;
 import net.dv8tion.jda.internal.utils.tuple.MutablePair;
+import net.dv8tion.jda.internal.utils.tuple.MutableTriple;
 
 public class WhoAmI extends Command {
 
@@ -16,6 +16,11 @@ public class WhoAmI extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
+        if (event.getMember().getEffectiveName().contains(" ")) {
+            event.reply("I do not accept nickname / IGN with a space.");
+            return;
+        }
+
         long userID = event.getAuthor().getIdLong();
         UserAccount ua = Data.currentUserList.getByUserKey(userID, event.getMember().getEffectiveName());
 
@@ -23,6 +28,13 @@ public class WhoAmI extends Command {
             ua = new UserAccount(userID);
             Data.currentUserList.add(new MutablePair<>(userID, ua));
             ua.setIgn(event.getMember().getEffectiveName());
+
+            /* if user have migration data */
+            MutableTriple<String, Integer, Integer> triple = Data.migrateData.get(event.getMember().getEffectiveName());
+            if (triple != null) {
+                ua.setJob(triple.getMiddle());
+                ua.setFloor(triple.getRight());
+            }
         }
 
         event.reply("Hellonyaa~ This is what I have of you:\n" + ua.toString());

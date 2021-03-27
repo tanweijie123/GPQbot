@@ -58,7 +58,7 @@ public class ReactionEvent extends ListenerAdapter {
                     int choice = ZonedDateTime.now(ZoneId.of("GMT+8")).getDayOfWeek().getValue() - 1;
                     List<User> usrList = ebReact.get(choice).retrieveUsers().stream().filter(x -> !x.isBot()).collect(Collectors.toList());
 
-                    String allName = "Participants (" + (usrList.size() - 1) + "): \n";
+                    String allName = "Participants (" + usrList.size()+ "): \n";
                     for (User u : usrList) {
                         UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getEffectiveName());
                         if (ua == null) {

@@ -34,7 +34,7 @@ public class NewRegistration extends Command {
         }
 
         EmbedBuilder eb = new EmbedBuilder();
-        eb.setTitle("Register for GPQ Day!");
+        eb.setTitle("Register for GPQ!");
         eb.setDescription(event.getArgs());
         eb.setColor(java.awt.Color.GREEN);
         eb.setFooter("This request is made by " + event.getMember().getEffectiveName() + " on " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));

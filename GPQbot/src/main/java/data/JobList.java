@@ -1,5 +1,7 @@
 package data;
 
+import java.util.Arrays;
+
 public class JobList {
     public static final String[] FULL_JOB_LIST = new String[] {
             "ANIMA: Ho Young",
@@ -50,12 +52,20 @@ public class JobList {
             "SPECIAL: Kinesis"
     };
 
-    public static String getJobListWithNumber() {
+    public static String getJobListWithNumber_OneBased() {
         String output = "";
 
         for (int i = 1; i <= FULL_JOB_LIST.length; i++) {
             output += "[" + i + "] " + FULL_JOB_LIST[i-1] + "\n";
         }
         return output;
+    }
+
+    public static int getIndexByJob_OneBased(String jobToSearch) {
+        for (int i = 0; i < FULL_JOB_LIST.length; i++) {
+            if (FULL_JOB_LIST[i].equalsIgnoreCase(jobToSearch))
+                return i + 1;
+        }
+        return -1;
     }
 }

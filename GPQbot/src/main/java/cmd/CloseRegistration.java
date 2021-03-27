@@ -14,7 +14,8 @@ public class CloseRegistration extends Command {
 
     public CloseRegistration() {
         super.name = "close";
-        super.help = "Close the current GPQ registration (only mods)";
+        super.help = "Close the current GPQ registration; force will delete the registration (only mods)";
+        super.arguments = "[force]";
         super.requiredRole = Settings.BOT_MOD_NAME;
     }
 
@@ -24,6 +25,12 @@ public class CloseRegistration extends Command {
 
         if (anyExistingReg == null) {
             event.reply("No opened registration to close");
+            return;
+        }
+
+        if (event.getArgs().equals("force")) {
+            Data.currentGPQList.remove(event.getGuild().getIdLong()); //force delete
+            event.reply("You can now create a new GPQ registration.");
             return;
         }
 
