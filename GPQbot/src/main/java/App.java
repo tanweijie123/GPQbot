@@ -3,6 +3,7 @@ import com.jagrosh.jdautilities.command.*;
 import config.Settings;
 import data.Data;
 import event.ReactionEvent;
+import event.TextEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -77,6 +78,7 @@ public class App {
             });
 
             jda.addEventListener(new ReactionEvent());
+            jda.addEventListener(new TextEvent());
 
             CommandClient commandClient = builder.build();
             Settings.botCommand = commandClient;

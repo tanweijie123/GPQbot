@@ -36,8 +36,8 @@ public class UserAccount {
     }
 
     public void setIgn(String ign) {
-        if (ign == null)
-            ign = "";
+        if (ign == null || ign.contains(" "))
+            return;
         this.ign = ign;
         Data.currentUserList.save();
     }
