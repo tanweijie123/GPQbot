@@ -10,3 +10,5 @@ GPQbot/user_account.json
 *.lck
 GPQbot/build/libs/
 GPQbot/build/tmp/
+GPQbot/gpq_past.json
+GPQbot/migrate.txt

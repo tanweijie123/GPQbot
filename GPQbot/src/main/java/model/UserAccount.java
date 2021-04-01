@@ -70,4 +70,8 @@ public class UserAccount {
     public String toString() {
         return String.format("[%s (%s)] -> %dF", ign, (job == 0) ? "<no job added>" : JobList.FULL_JOB_LIST[job-1], floor);
     }
+
+    public String printString() {
+        return String.format("%s/%s/%d", ign, (job == 0) ? "" : JobList.FULL_JOB_LIST[job-1], floor);
+    }
 }

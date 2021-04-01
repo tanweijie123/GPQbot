@@ -101,6 +101,7 @@ public class App {
 
         builder.addCommand(new CurrentRegistration());
         builder.addCommand(new GetJobList());
+        builder.addCommands(new GPQRanking());
 
         builder.addCommand(new NewRegistration());
         builder.addCommands(new CloseRegistration());

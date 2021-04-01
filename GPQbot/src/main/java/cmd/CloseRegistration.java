@@ -28,14 +28,28 @@ public class CloseRegistration extends Command {
             return;
         }
 
+        String[] retSplit = anyExistingReg.split("/");
+
         if (event.getArgs().equals("force")) {
             Data.currentGPQList.remove(event.getGuild().getIdLong()); //force delete
+            Message actualEb = event.getGuild().getTextChannelById(retSplit[5]).getHistoryAround(retSplit[6], 1).complete().getRetrievedHistory().get(0);
+            if (actualEb.isPinned())
+                actualEb.unpin().queue();
+
             event.reply("You can now create a new GPQ registration.");
             return;
         }
 
         //TODO: check if existingReg is manually deleted.
-        Message msg = event.getChannel().sendMessage("Closing registration for " + anyExistingReg + " and getting participants for today (" + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("EEEE")) + ")?").complete();
+        //Message msg = event.getChannel().sendMessage("Closing registration for " + anyExistingReg + " and getting participants for today (" + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("EEEE")) + ")?").complete();
+        Message msg;
+
+        if (event.getChannel().getIdLong() == Long.parseLong(retSplit[5])) {
+            msg = event.getChannel().getHistoryAround(retSplit[6], 1).complete().getRetrievedHistory().get(0);
+            msg = msg.reply("Closing registration for this?").complete();
+        } else {
+            msg = event.getChannel().sendMessage("Closing registration for " + anyExistingReg).complete();
+        }
         msg.addReaction("U+2705").queue();
         msg.addReaction("U+274C").queue();
     }

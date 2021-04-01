@@ -35,10 +35,12 @@ public class NewRegistration extends Command {
 
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle("Register for GPQ!");
+        eb.setThumbnail(event.getGuild().getIconUrl());
         eb.setDescription(event.getArgs());
         eb.setColor(java.awt.Color.GREEN);
         eb.setFooter("This request is made by " + event.getMember().getEffectiveName() + " on " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
         Message msg = event.getChannel().sendMessage(eb.build()).complete();
+        /*
         msg.addReaction("\uD83C\uDDF2").queue();
         msg.addReaction("\uD83C\uDDF9").queue();
         msg.addReaction("\uD83C\uDDFC").queue();
@@ -46,6 +48,9 @@ public class NewRegistration extends Command {
         msg.addReaction("\uD83C\uDDEB").queue();
         msg.addReaction("\uD83C\uDDF8").queue();
         msg.addReaction("\uD83D\uDE34").queue();
+        */
+        msg.addReaction("U+2705").queue();
+        msg.addReaction("U+274C").queue();
         msg.pin().queue();
 
         event.getChannel().sendMessage("@everyone: " + event.getMember().getEffectiveName() + " has created a new registration!").queue();

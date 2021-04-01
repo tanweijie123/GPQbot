@@ -10,11 +10,13 @@ import java.util.Scanner;
 
 public class Data {
     public static CurrentGPQList currentGPQList;
+    public static PastGPQList pastGPQList;
     public static CurrentUserList currentUserList;
     public static HashMap<String, MutableTriple<String, Integer, Integer>> migrateData;
 
     public static void init() {
         currentGPQList = Storage.loadCurrentGPQList().orElse(new CurrentGPQList());
+        pastGPQList = Storage.loadPastGPQList().orElse(new PastGPQList());
         currentUserList = Storage.loadCurrentUserList().orElse(new CurrentUserList());
 
         loadMigrateData();
@@ -35,7 +37,7 @@ public class Data {
                         Integer.parseInt(split[2])
                 );
 
-                migrateData.put(split[0], triple);
+                migrateData.put(split[0].toUpperCase(), triple);
 
             }
             System.out.println("Migration Data loaded");

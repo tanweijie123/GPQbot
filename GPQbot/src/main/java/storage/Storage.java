@@ -2,6 +2,7 @@ package storage;
 
 import data.CurrentGPQList;
 import data.CurrentUserList;
+import data.PastGPQList;
 
 import java.util.Optional;
 
@@ -13,6 +14,14 @@ public class Storage {
 
     public static Optional<CurrentGPQList> loadCurrentGPQList() {
         return JsonAdapter.loadCurrentGPQList();
+    }
+
+    public static boolean savePastGPQList(PastGPQList content) {
+        return JsonAdapter.savePastGPQList(content);
+    }
+
+    public static Optional<PastGPQList> loadPastGPQList() {
+        return JsonAdapter.loadPastGPQList();
     }
 
     public static boolean saveCurrentUserList(CurrentUserList content) {

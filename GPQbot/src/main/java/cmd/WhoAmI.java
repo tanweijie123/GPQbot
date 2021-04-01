@@ -3,9 +3,12 @@ package cmd;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import data.Data;
+import model.GPQParticipation;
 import model.UserAccount;
 import net.dv8tion.jda.internal.utils.tuple.MutablePair;
 import net.dv8tion.jda.internal.utils.tuple.MutableTriple;
+
+import java.util.LinkedList;
 
 public class WhoAmI extends Command {
 
@@ -30,7 +33,7 @@ public class WhoAmI extends Command {
             ua.setIgn(event.getMember().getEffectiveName());
 
             /* if user have migration data */
-            MutableTriple<String, Integer, Integer> triple = Data.migrateData.get(event.getMember().getEffectiveName());
+            MutableTriple<String, Integer, Integer> triple = Data.migrateData.get(event.getMember().getEffectiveName().toUpperCase());
             if (triple != null) {
                 ua.setJob(triple.getMiddle());
                 ua.setFloor(triple.getRight());

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import data.CurrentGPQList;
 import data.CurrentUserList;
+import data.PastGPQList;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,6 +21,15 @@ class JsonAdapter {
 
         String exportString = gson.toJson(content);
         return writeToFile(new File("gpq_current.json"), exportString);
+    }
+
+    static boolean savePastGPQList(PastGPQList content) {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setPrettyPrinting();
+        Gson gson = builder.create();
+
+        String exportString = gson.toJson(content);
+        return writeToFile(new File("gpq_past.json"), exportString);
     }
 
     static boolean saveCurrentUserList(CurrentUserList content) {
@@ -49,6 +59,13 @@ class JsonAdapter {
         File file = new File("gpq_current.json");
         Optional<CurrentGPQList> gpqList = loadFromFile(file, CurrentGPQList.class);
         return gpqList.or( () -> Optional.of(new CurrentGPQList()) );
+
+    }
+
+    static Optional<PastGPQList> loadPastGPQList() {
+        File file = new File("gpq_past.json");
+        Optional<PastGPQList> gpqList = loadFromFile(file, PastGPQList.class);
+        return gpqList.or( () -> Optional.of(new PastGPQList()) );
 
     }
 

@@ -3,6 +3,8 @@ package event;
 import config.Settings;
 import data.Data;
 import data.JobList;
+import data.PastGPQList;
+import model.GPQParticipation;
 import model.UserAccount;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
@@ -16,6 +18,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,6 +58,30 @@ public class ReactionEvent extends ListenerAdapter {
 
                     List<MessageReaction> ebReact = actualEb.getReactions();
 
+                    //Start of NEW POLL
+                    List<UserAccount> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> !x.isBot())
+                            .map(x -> {
+                                UserAccount ua = Data.currentUserList.getByUserKey(x.getIdLong(), event.getGuild().getMember(x).getEffectiveName());
+                                if (ua == null) {
+                                    ua = new UserAccount(x.getIdLong());
+                                    ua.setIgn(event.getGuild().getMember(x).getEffectiveName());
+                                }
+                                return ua;
+                            })
+                            .sorted(Comparator.comparingInt(UserAccount::getFloor).reversed())
+                            .collect(Collectors.toList());
+
+                    String reply = "Participants (" + usrAttending.size()+ "): \n";
+                    for (int i = 0; i < usrAttending.size(); i++) {
+                        reply += String.format("%d. %s\n", i+1, usrAttending.get(i).printString());
+                    }
+                    event.getChannel().sendMessage(reply).queue();
+
+                    Data.pastGPQList.add(new GPQParticipation(event.getGuild().getIdLong(), ZonedDateTime.now(ZoneId.of("GMT+8")), usrAttending));
+
+                    //END OF NEW POLL
+
+                    /* OLD WEEKLY POLL
                     int choice = ZonedDateTime.now(ZoneId.of("GMT+8")).getDayOfWeek().getValue() - 1;
                     List<User> usrList = ebReact.get(choice).retrieveUsers().stream().filter(x -> !x.isBot()).collect(Collectors.toList());
 
@@ -78,6 +105,8 @@ public class ReactionEvent extends ListenerAdapter {
                         }
                     }
                     event.getChannel().sendMessage(allName).queue();
+                    END OF OLD WEEKLY POLL */
+
 
                     //TODO: send excel output
                     //event.getUser().openPrivateChannel().flatMap(hi -> hi.sendMessage("Hello~")).queue();

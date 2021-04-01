@@ -17,6 +17,12 @@ import java.util.stream.Collectors;
 
 public class TextEvent extends ListenerAdapter {
 
+    /*
+        Nyaa commands:
+        !nyan as nyaa show reg [limit x] - show all participants for all days without closing
+
+     */
+
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (!event.getMessage().getContentRaw().startsWith(Settings.botCommand.getPrefix())) {
@@ -35,7 +41,7 @@ public class TextEvent extends ListenerAdapter {
         }
 
         /* Command => !nyan as mama show regalldays [limit] */
-        if (event.getMessage().getContentRaw().contains("show regalldays")) {
+        if (event.getMessage().getContentRaw().contains("show reg")) {
             int limit = Integer.MAX_VALUE;
 
             if (event.getMessage().getContentRaw().contains("limit")) {
@@ -52,14 +58,25 @@ public class TextEvent extends ListenerAdapter {
             List<MessageReaction> ebReact = actualEb.getReactions();
             String reply = "";
 
-            for (int i = 0; i < 7; i++) { //hardcode at sunday (6)
+            for (int i = 0; i < 1; i++) { //hard code to yes (0) and no (1)
                 List<User> usrList = ebReact.get(i).retrieveUsers().stream().filter(x -> !x.isBot()).collect(Collectors.toList());
 
-                reply += String.format("For %s, Total Participants = %d \n", DayOfWeek.of(i + 1).name(), usrList.size());
+                if (i == 0) {
+                    reply += String.format("For Participating = %d \n", usrList.size());
+                } else if (i == 1) {
+                    reply += String.format("For NOT Participating = %d \n", usrList.size());
+                }
 
                 List<UserAccount> usrForDay = usrList.stream()
-                        .map(x -> Data.currentUserList.getByUserKey(x.getIdLong(), null)) //set null so no need to check effective name too many times
-                        .sorted(Comparator.comparingInt(UserAccount::getFloor))
+                        .map(x -> {
+                            UserAccount ua = Data.currentUserList.getByUserKey(x.getIdLong(), event.getGuild().getMember(x).getEffectiveName());
+                            if (ua == null) {
+                                ua = new UserAccount(x.getIdLong());
+                                ua.setIgn(event.getGuild().getMember(x).getEffectiveName());
+                            }
+                            return ua;
+                        })//set null so no need to check effective name too many times
+                        .sorted(Comparator.comparingInt(UserAccount::getFloor).reversed())
                         .collect(Collectors.toList());
 
                 int thisLimit = Math.min(limit, usrForDay.size());
@@ -72,11 +89,12 @@ public class TextEvent extends ListenerAdapter {
                     reply += "...\n";
                 }
 
-                reply += "\n\n";
+                reply += "\n";
 
             }
 
-            event.getMessage().reply(reply).queue();
+            event.getChannel().sendMessage(reply).queue();
+            event.getMessage().delete().queue();
         }
     }
 }
