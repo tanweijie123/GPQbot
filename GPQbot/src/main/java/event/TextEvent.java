@@ -13,6 +13,7 @@ import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class TextEvent extends ListenerAdapter {
@@ -82,7 +83,7 @@ public class TextEvent extends ListenerAdapter {
                 int thisLimit = Math.min(limit, usrForDay.size());
 
                 for (int j = 0; j < thisLimit; j++) {
-                    reply += String.format("%d. %s\n", j+1, usrForDay.get(j).toString());
+                    reply += String.format("%d. %s\n", j+1, usrForDay.get(j).printString());
                 }
 
                 if (thisLimit < usrForDay.size()) {
@@ -93,7 +94,7 @@ public class TextEvent extends ListenerAdapter {
 
             }
 
-            event.getChannel().sendMessage(reply).queue();
+            event.getChannel().sendMessage(reply).complete().delete().queueAfter(30, TimeUnit.SECONDS);;
             event.getMessage().delete().queue();
         }
     }

@@ -33,9 +33,15 @@ public class GPQRanking extends Command {
                 }
             }));
 
-            List<Map.Entry<UserAccount, Integer>> top20 = tallyCount.entrySet()
-                    .stream().sorted((x, y) -> Integer.compare(y.getValue(), x.getValue())).limit(LIMIT).collect(Collectors.toList());
-
+            List<Map.Entry<UserAccount, Integer>> top20 = tallyCount.entrySet().stream()
+                    .sorted((x, y) -> {
+                        int compare = Integer.compare(y.getValue(), x.getValue());
+                        if (compare == 0) {
+                            compare = Integer.compare(y.getKey().getFloor(), x.getKey().getFloor());
+                        }
+                        return compare;
+                    }
+                    ).limit(LIMIT).collect(Collectors.toList());
             int max = Math.min(LIMIT, top20.size());
 
             String reply = "Top 20 Attendance for GPQ:\n";
