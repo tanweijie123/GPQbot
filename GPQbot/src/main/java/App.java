@@ -1,4 +1,5 @@
 import cmd.general.*;
+import cmd.mod.AsMod;
 import cmd.mod.CloseRegistration;
 import cmd.mod.NewRegistration;
 import com.jagrosh.jdautilities.command.*;
@@ -108,5 +109,7 @@ public class App {
 
         builder.addCommand(new NewRegistration());
         builder.addCommands(new CloseRegistration());
+
+        builder.addCommands(new AsMod());
     }
 }
