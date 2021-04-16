@@ -1,4 +1,6 @@
-import cmd.*;
+import cmd.general.*;
+import cmd.mod.CloseRegistration;
+import cmd.mod.NewRegistration;
 import com.jagrosh.jdautilities.command.*;
 import config.Settings;
 import data.Data;

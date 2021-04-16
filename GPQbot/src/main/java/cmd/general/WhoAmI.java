@@ -1,4 +1,4 @@
-package cmd;
+package cmd.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
