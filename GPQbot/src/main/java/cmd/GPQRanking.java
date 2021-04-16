@@ -23,9 +23,9 @@ public class GPQRanking extends Command {
         if (lst == null) {
             event.reply("This guild had not went to gpq before.");
         } else {
-            HashMap<UserAccount, Integer> tallyCount = new HashMap<>();
+            HashMap<Long, Integer> tallyCount = new HashMap<>();
             lst.stream().forEach(
-                    x -> x.getParticipantList().stream().forEach(y -> {
+                    x -> x.getParticipantList().stream().map(y -> y.getUserId()).forEach(y -> {
                 if (tallyCount.containsKey(y)) {
                     tallyCount.put(y, tallyCount.get(y) + 1);
                 } else {
@@ -33,22 +33,41 @@ public class GPQRanking extends Command {
                 }
             }));
 
-            List<Map.Entry<UserAccount, Integer>> top20 = tallyCount.entrySet().stream()
-                    .sorted((x, y) -> {
-                        int compare = Integer.compare(y.getValue(), x.getValue());
-                        if (compare == 0) {
-                            compare = Integer.compare(y.getKey().getFloor(), x.getKey().getFloor());
-                        }
-                        return compare;
-                    }
-                    ).limit(LIMIT).collect(Collectors.toList());
+            List<Map.Entry<Long, Integer>> top20 = tallyCount.entrySet().stream()
+                    .sorted((x, y) -> Integer.compare(y.getValue(), x.getValue()))
+                    .collect(Collectors.toList());
             int max = Math.min(LIMIT, top20.size());
+
+            int rank = 1;
+            int myRank = -1;
 
             String reply = "Top 20 Attendance for GPQ:\n";
             for(int i = 0; i < max; i++) {
-                reply += String.format("%d. %s -> %d times", i+1, top20.get(i).getKey().getIgn(), top20.get(i).getValue());
+                if (i != 0 && (top20.get(i).getValue() != top20.get(i-1).getValue())) {
+                    rank = i + 1;
+                }
+                if (top20.get(i).getKey() == event.getAuthor().getIdLong()) {
+                    myRank = rank;
+                }
+                UserAccount ua = Data.currentUserList.getByUserKey(top20.get(i).getKey(), null);
+                reply += String.format("%d. %s -> %d time(s) \n", rank, ua.getIgn(), top20.get(i).getValue());
             }
 
+            if (myRank == -1) { // check if user is below top 20
+                for (int i = max; i < top20.size(); i++) {
+                    if (i != 0 && (top20.get(i).getValue() != top20.get(i-1).getValue())) {
+                        rank = i + 1;
+                    }
+
+                    if (top20.get(i).getKey() == event.getAuthor().getIdLong()) {
+                        myRank = rank;
+                    }
+                }
+            }
+
+            if (myRank > 0) {
+                reply += "\nYou rank " + myRank + " in the guild.";
+            }
             event.reply(reply);
         }
 

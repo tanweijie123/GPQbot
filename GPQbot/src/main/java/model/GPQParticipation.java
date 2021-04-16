@@ -10,11 +10,13 @@ import java.util.List;
 public class GPQParticipation {
     private long guildId;
     private String dateTime;
+    private int score;
     private List<UserAccount> participantList;
 
     public GPQParticipation(long guildId, ZonedDateTime dateTime, List<UserAccount> participantList) {
         this.guildId = guildId;
         this.dateTime = dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        this.score = 0;
         this.participantList = participantList;
     }
 

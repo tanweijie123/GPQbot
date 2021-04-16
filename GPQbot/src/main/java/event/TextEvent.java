@@ -3,6 +3,7 @@ package event;
 import config.Settings;
 import data.Data;
 import model.UserAccount;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
@@ -41,7 +42,7 @@ public class TextEvent extends ListenerAdapter {
             return;
         }
 
-        /* Command => !nyan as mama show regalldays [limit] */
+        /* Command => !nyan as nyaa show reg [limit] */
         if (event.getMessage().getContentRaw().contains("show reg")) {
             int limit = Integer.MAX_VALUE;
 
@@ -96,6 +97,24 @@ public class TextEvent extends ListenerAdapter {
 
             event.getChannel().sendMessage(reply).complete().delete().queueAfter(30, TimeUnit.SECONDS);;
             event.getMessage().delete().queue();
+            return;
+        }
+
+        /* Command => !nyan as nyaa for @MooJieJie floor 10 */
+        if (event.getMessage().getContentRaw().contains("for")) {
+            Member member = event.getMessage().getMentionedMembers().get(0); //TODO: ensure it has at least 1 member
+
+            if (event.getMessage().getContentRaw().contains("floor")) {
+                UserAccount ua = Data.currentUserList.getByUserKey(member.getIdLong(), member.getEffectiveName());
+                if (ua == null) {
+                    event.getChannel().sendMessage(member.getAsMention() + " is not registered.").queue();
+                } else {
+                    ua.setFloor(Integer.parseInt(event.getMessage().getContentRaw().split(" ")[6]));
+                    event.getChannel().sendMessage("Updated. -> " + ua.toString()).queue();
+                }
+                return;
+            }
+            return;
         }
     }
 }
