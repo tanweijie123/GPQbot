@@ -6,9 +6,9 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 public class WhereAreYou extends Command {
 
     public WhereAreYou() {
-        super.name = "wru";
+        super.name = "whereareyou";
         super.help = "Check if bot is online";
-        super.aliases = new String[]{"whereareyou"};
+        super.aliases = new String[]{"wru"};
     }
 
     @Override

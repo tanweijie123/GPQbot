@@ -99,6 +99,7 @@ public class App {
 
     private static void addCommands(CommandClientBuilder builder) {
         builder.addCommand(new WhereAreYou());
+        builder.addCommands(new WhoAreYou());
         builder.addCommand(new WhoAmI());
         builder.addCommand(new SetJob());
         builder.addCommand(new SetFloor());
