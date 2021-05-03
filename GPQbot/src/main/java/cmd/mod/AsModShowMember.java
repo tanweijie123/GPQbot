@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
 import data.Data;
+import logic.GuildMethod;
 import model.UserAccount;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -23,17 +24,10 @@ public class AsModShowMember extends Command {
     protected void execute(CommandEvent event) {
         String reply = "Current Guild Members registered with NyanBot: \n";
 
-        List<Member> memList = event.getGuild().getMembers();
-
-        List<UserAccount> uaList =
-                memList.stream()
-                .map(x -> Data.currentUserList.getByUserKey(x.getIdLong(), x.getEffectiveName()))
-                .filter(x -> x != null)
-                .sorted( (x,y) -> x.getIgn().compareToIgnoreCase(y.getIgn()) )
-                .collect(Collectors.toList());
+        List<UserAccount> uaList = GuildMethod.getGuildMembers(event.getGuild().getId());
 
         for (UserAccount ua : uaList) {
-            reply += ua.toString() + "\n";
+            reply += ua.replyString(event.getGuild().getMemberById(ua.getUserId()).getEffectiveName()) + "\n";
         }
 
         event.reply(reply);

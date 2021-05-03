@@ -58,4 +58,9 @@ public class SQLFunctions {
         String query = "SELECT uid, COUNT(*) FROM GpqParticipants WHERE gid = ? GROUP BY uid ORDER BY COUNT(*) DESC";
         return SQLConn.getConnection().prepareStatement(query);
     }
+
+    public static PreparedStatement getGuildMembers() throws SQLException {
+        String query = "SELECT uid, job, floor FROM Users WHERE gid = ? ORDER BY floor DESC";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
 }

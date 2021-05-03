@@ -120,4 +120,24 @@ public class GuildMethod {
             return null;
         }
     }
+
+    public static List<UserAccount> getGuildMembers(String guildId) {
+        try {
+            PreparedStatement stmt = SQLFunctions.getGuildMembers();
+            stmt.setString(1, guildId);
+            ResultSet resultSet = stmt.executeQuery();
+
+            List<UserAccount> uaList = new ArrayList<>();
+            while(resultSet.next()) {
+                uaList.add(new UserAccount(guildId, resultSet.getString("uid"), resultSet.getInt("job"), resultSet.getInt("floor")));
+            }
+            stmt.close();
+            return uaList;
+
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function getGuildMembers()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return null;
+        }
+    }
 }
