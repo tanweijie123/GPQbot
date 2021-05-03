@@ -11,4 +11,4 @@ GPQbot/user_account.json
 GPQbot/build/libs/
 GPQbot/build/tmp/
 GPQbot/gpq_past.json
-GPQbot/migrate.txt
+GPQbot/dbtoken
