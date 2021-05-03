@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,10 +26,14 @@ public class GPQParticipation {
     }
 
     public ZonedDateTime getDateTime() {
-        return ZonedDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
+        return ZonedDateTime.parse(dateTime, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").withZone(ZoneId.of("GMT+8")));
     }
 
     public List<UserAccount> getParticipantList() {
         return new ArrayList<>(participantList);
+    }
+
+    public int getScore() {
+        return score;
     }
 }

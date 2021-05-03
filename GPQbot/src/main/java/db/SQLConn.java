@@ -5,26 +5,20 @@ import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.Scanner;
 
-public class LoadDriver {
-    public static Connection conn = null;
+public class SQLConn {
 
-    public static void main(String[] args) {
+    static Connection getConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+        Connection conn = null;
+
         try {
             Scanner scanner = new Scanner(new File("dbtoken"));
-
             conn = DriverManager.getConnection(scanner.next(), scanner.next(), scanner.next());
-            Statement stmt = conn.createStatement();
-            String query = "SELECT * FROM a;";
-            ResultSet resultSet = stmt.executeQuery(query);
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString(1)); //1-based indexing
-            }
 
         } catch (FileNotFoundException e) {
             System.err.println("Unable to retrieve dbtoken file");
@@ -33,5 +27,7 @@ public class LoadDriver {
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
         }
+
+        return conn;
     }
 }

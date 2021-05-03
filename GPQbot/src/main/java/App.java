@@ -90,6 +90,8 @@ public class App {
             Settings.LOGGER.log(Level.INFO, "Bot is ready and awaiting. . .");
             jda.awaitReady();
 
+            //exportDataToSql();
+
         } catch (Exception e) {
             System.out.println("Bot Token Failed!");
             e.printStackTrace();
@@ -112,5 +114,34 @@ public class App {
         builder.addCommands(new CloseRegistration());
 
         builder.addCommands(new AsMod());
+    }
+
+    private static void exportDataToSql() {
+        System.out.println("INSERT INTO Guilds\nVALUES(705486807441211442);");
+
+        System.out.println("INSERT INTO Users\nVALUES");
+        Data.currentUserList.currentList.entrySet().stream().forEach(x -> System.out.println("(705486807441211442," + x.getKey() + "," + x.getValue().getJob() + "," + x.getValue().getFloor() + "),"));
+
+        System.out.println("INSERT INTO GpqCurrent(gid, link)\nVALUES");
+        Data.currentGPQList.currentList.entrySet().stream().forEach(x -> System.out.println("(" + x.getKey() + ", '" + x.getValue().toString() + "'),"));
+
+        System.out.println("INSERT INTO GpqConfirmed\nVALUES");
+        Data.pastGPQList.historyMap.entrySet().stream().forEach(x ->
+                x.getValue().stream().forEach(y ->
+
+                System.out.println("(" + x.getKey() + ", '" + y.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "'," + y.getScore() + "),")
+                )
+        );
+
+        System.out.println("INSERT INTO GpqParticipants\nVALUES");
+        Data.pastGPQList.historyMap.entrySet().stream().forEach(x ->
+                x.getValue().stream().forEach(y ->
+                    y.getParticipantList().stream().forEach(z ->
+                        System.out.println("(" + x.getKey() + ", '" + y.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "'," + z.getUserId() + "),")
+                    )
+                )
+        );
+
+        System.out.println("~EOF~");
     }
 }
