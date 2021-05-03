@@ -13,7 +13,7 @@ CREATE TABLE Guilds (
 CREATE TABLE Users (
 	gid VARCHAR(18) REFERENCES Guilds,
     uid VARCHAR(18), 
-    job int,
+    job int DEFAULT 0,
     floor int NOT NULL DEFAULT 0,
     PRIMARY KEY (gid, uid)
 ); 

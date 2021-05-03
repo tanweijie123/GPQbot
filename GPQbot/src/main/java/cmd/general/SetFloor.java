@@ -3,9 +3,8 @@ package cmd.general;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
-import data.Data;
+import logic.UsersMethod;
 import model.UserAccount;
-import net.dv8tion.jda.internal.utils.tuple.MutablePair;
 
 public class SetFloor extends Command {
 
@@ -22,27 +21,27 @@ public class SetFloor extends Command {
             return;
         }
 
-        long userID = event.getAuthor().getIdLong();
-        UserAccount ua = Data.currentUserList.getByUserKey(userID, event.getMember().getEffectiveName());
-
-        if (ua == null) {
-            ua = new UserAccount(userID);
-            Data.currentUserList.add(new MutablePair<>(userID, ua));
-            ua.setIgn(event.getMember().getEffectiveName());
-        }
-
+        int floor = 0;
         try {
-            int floor = Integer.parseInt(event.getArgs().split(" ")[0]);
+            floor = Integer.parseInt(event.getArgs().split(" ")[0]);
             if (floor < 0) {
                 event.reply("Oof.. You can't even beat a snail?");
+                return;
             } else if (floor > 70) {
                 event.reply("Woahh.. You are strong. Too strong in fact.");
-            } else {
-                ua.setFloor(floor);
-                event.reply("Hellonyaa~ This is what I have of you:\n" + ua.toString());
+                return;
             }
         } catch (NumberFormatException ev) {
             event.reply("Huhh? Your floor is not a number? Idk how to use it nyaa (Eg. \"" + Settings.botCommand.getPrefix() + "floor 50\")");
+            return;
         }
+
+        //TODO; maybe change logic flow
+        UsersMethod.getOrCreateUser(event.getGuild().getId(), event.getAuthor().getId());
+        UsersMethod.updateFloor(event.getGuild().getId(), event.getAuthor().getId(), floor);
+        UserAccount ua = UsersMethod.getOrCreateUser(event.getGuild().getId(), event.getAuthor().getId());
+
+        event.reply("Hellonyaa~ This is what I have of you:\n" + ua.replyString(event.getMember().getEffectiveName()));
+
     }
 }
