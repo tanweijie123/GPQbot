@@ -7,6 +7,8 @@ import model.UserAccount;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UsersMethod {
 
@@ -19,12 +21,7 @@ public class UsersMethod {
 
             boolean found = resultSet.next();
             if (!found) {
-                PreparedStatement stmt2 = SQLFunctions.createNewUser();
-                stmt2.setString(1, guildId);
-                stmt2.setString(2, userId);
-                int update = stmt2.executeUpdate(); //assume success where update == 1
-                stmt2.close();
-
+                createUser(guildId, userId);
                 resultSet = stmt.executeQuery();
                 resultSet.next();
             }
@@ -37,6 +34,77 @@ public class UsersMethod {
             System.err.println("Error in performing function getUserInfo() or createNewUser()");
             System.err.println("SQLException: " + ex.getMessage());
             return null;
+        }
+    }
+
+    public static UserAccount getUser(String guildId, String userId) {
+        try {
+            PreparedStatement stmt = SQLFunctions.getUserInfo();
+            stmt.setString(1, guildId);
+            stmt.setString(2, userId);
+            ResultSet resultSet = stmt.executeQuery();
+
+            boolean found = resultSet.next();
+            if (!found) {
+                return null;
+            }
+            UserAccount ua = new UserAccount(guildId, userId, resultSet.getInt("job"), resultSet.getInt("floor") );
+
+            stmt.close();
+            return ua;
+
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function getUserInfo()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return null;
+        }
+    }
+
+    public static List<UserAccount> getUsers(String guildId, List<String> userId) {
+        List<UserAccount> uaList = new ArrayList<>();
+
+        try {
+            PreparedStatement stmt = SQLFunctions.getUserInfo();
+            stmt.setString(1, guildId);
+
+            for (String s : userId) {
+                stmt.setString(2, s);
+                ResultSet resultSet = stmt.executeQuery();
+
+                boolean found = resultSet.next();
+                UserAccount ua = null;
+                if (!found) {
+                    ua = new UserAccount(guildId, s, 0, 0);
+                } else {
+                    ua = new UserAccount(guildId, s, resultSet.getInt("job"), resultSet.getInt("floor"));
+                }
+                uaList.add(ua);
+            }
+
+            stmt.close();
+            return uaList;
+
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function getUserInfo()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return null;
+        }
+    }
+
+    public static boolean createUser(String guildId, String userId) {
+        try {
+            PreparedStatement stmt = SQLFunctions.createNewUser();
+            stmt.setString(1, guildId);
+            stmt.setString(2, userId);
+            int update = stmt.executeUpdate(); //assume success where update == 1
+            stmt.close();
+
+            return update == 1;
+
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function createNewUser()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return false;
         }
     }
 

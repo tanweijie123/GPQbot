@@ -4,6 +4,8 @@ import config.Settings;
 import data.Data;
 import data.JobList;
 import data.PastGPQList;
+import logic.GuildMethod;
+import logic.UsersMethod;
 import model.GPQParticipation;
 import model.UserAccount;
 import net.dv8tion.jda.api.entities.Message;
@@ -17,10 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReactionEvent extends ListenerAdapter {
@@ -47,66 +46,34 @@ public class ReactionEvent extends ListenerAdapter {
 
                     event.getChannel().sendMessage("Confirmed GPQ at " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss (EEE)"))).queue();
 
-                    String[] creationMsg = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong()).split("/");
+                    String[] creationMsg = GuildMethod.getCurrentGPQLink(event.getGuild().getId()).split("/");
 
                     //TODO: check if existingReg is manually deleted.
                     Message actualEb = event.getGuild().getTextChannelById(creationMsg[5]).getHistoryAround(creationMsg[6], 1).complete().getRetrievedHistory().get(0);
                     if (actualEb.isPinned())
                         actualEb.unpin().queue();
 
-                    Data.currentGPQList.remove(event.getGuild().getIdLong()); //once finalised, it will be removed from current.
+                    GuildMethod.deleteCurrentGPQLink(event.getGuild().getId());  //once finalised, it will be removed from current.
 
                     List<MessageReaction> ebReact = actualEb.getReactions();
 
-                    //Start of NEW POLL
-                    List<UserAccount> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> !x.isBot())
-                            .map(x -> {
-                                UserAccount ua = Data.currentUserList.getByUserKey(x.getIdLong(), event.getGuild().getMember(x).getEffectiveName());
-                                if (ua == null) {
-                                    ua = new UserAccount(x.getIdLong());
-                                    ua.setIgn(event.getGuild().getMember(x).getEffectiveName());
-                                }
-                                return ua;
-                            })
-                            .sorted(Comparator.comparingInt(UserAccount::getFloor).reversed())
+                    HashMap<String, String> idToName = new HashMap<>();
+                    List<String> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> !x.isBot())
+                            .peek(x -> idToName.put(x.getId(), event.getGuild().getMemberById(x.getId()).getEffectiveName()))
+                            .map(x -> x.getId())
                             .collect(Collectors.toList());
 
-                    String reply = "Participants (" + usrAttending.size()+ "): \n";
-                    for (int i = 0; i < usrAttending.size(); i++) {
-                        reply += String.format("%d. %s\n", i+1, usrAttending.get(i).printString());
+                    List<UserAccount> uaList = UsersMethod.getUsers(event.getGuild().getId(), usrAttending);
+                    uaList.sort( (x,y) -> Integer.compare(y.getFloor(), x.getFloor()) );
+
+                    String reply = "Participants (" + uaList.size()+ "): \n";
+                    for (int i = 0; i < uaList.size(); i++) {
+                        //TODO; optimise getEffectiveName
+                        reply += String.format("%d. %s\n", i+1, uaList.get(i).gpqString(idToName.get(uaList.get(i))));
                     }
                     event.getChannel().sendMessage(reply).queue();
 
-                    Data.pastGPQList.add(new GPQParticipation(event.getGuild().getIdLong(), ZonedDateTime.now(ZoneId.of("GMT+8")), usrAttending));
-
-                    //END OF NEW POLL
-
-                    /* OLD WEEKLY POLL
-                    int choice = ZonedDateTime.now(ZoneId.of("GMT+8")).getDayOfWeek().getValue() - 1;
-                    List<User> usrList = ebReact.get(choice).retrieveUsers().stream().filter(x -> !x.isBot()).collect(Collectors.toList());
-
-                    String allName = "Participants (" + usrList.size()+ "): \n";
-                    for (User u : usrList) {
-                        UserAccount ua = Data.currentUserList.getByUserKey(u.getIdLong(), event.getGuild().getMember(u).getEffectiveName());
-                        if (ua == null) {
-                            allName += event.getGuild().getMember(u).getEffectiveName() + "\n";
-                        } else {
-                            String toAppend = ua.getIgn();
-
-                            if (ua.getJob() != 0) {
-                                toAppend += "/" + JobList.FULL_JOB_LIST[ua.getJob()-1];
-                            }
-
-                            if (ua.getFloor() != 0) {
-                                toAppend += "/" + ua.getFloor();
-                            }
-
-                            allName += toAppend + "\n";
-                        }
-                    }
-                    event.getChannel().sendMessage(allName).queue();
-                    END OF OLD WEEKLY POLL */
-
+                    GuildMethod.insertGpqConfirmation(event.getGuild().getId(), uaList);
 
                     //TODO: send excel output
                     //event.getUser().openPrivateChannel().flatMap(hi -> hi.sendMessage("Hello~")).queue();

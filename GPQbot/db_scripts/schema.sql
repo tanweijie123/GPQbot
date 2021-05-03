@@ -22,7 +22,7 @@ CREATE TABLE GpqCurrent (
 	gid VARCHAR(18) REFERENCES Guilds, 
     created timestamp DEFAULT NOW(), 
     link text NOT NULL,
-    PRIMARY KEY (gid, created)
+    PRIMARY KEY (gid)
 ); 
 
 CREATE TABLE GpqConfirmed (
