@@ -11,25 +11,28 @@ CREATE TABLE Guilds (
 ); 
 
 CREATE TABLE Users (
-	gid VARCHAR(18) REFERENCES Guilds,
+	gid VARCHAR(18),
     uid VARCHAR(18), 
     job int DEFAULT 0,
     floor int NOT NULL DEFAULT 0,
-    PRIMARY KEY (gid, uid)
+    PRIMARY KEY (gid, uid),
+    FOREIGN KEY (gid) REFERENCES Guilds(gid)
 ); 
 
 CREATE TABLE GpqCurrent (
-	gid VARCHAR(18) REFERENCES Guilds, 
+	gid VARCHAR(18),
     created timestamp DEFAULT NOW(), 
     link text NOT NULL,
-    PRIMARY KEY (gid)
+    PRIMARY KEY (gid),
+    FOREIGN KEY (gid) REFERENCES Guilds(gid)
 ); 
 
 CREATE TABLE GpqConfirmed (
-	gid VARCHAR(18) REFERENCES Guilds, 
+	gid VARCHAR(18), 
     confirmedTime timestamp DEFAULT NOW(), 
     score int DEFAULT 0,
-    PRIMARY KEY (gid, confirmedTime)
+    PRIMARY KEY (gid, confirmedTime),
+    FOREIGN KEY (gid) REFERENCES Guilds(gid)
 ); 
 
 /* This table does not refers to Users table as FK, because some participants might not be registered users */ 
@@ -38,5 +41,5 @@ CREATE TABLE GpqParticipants (
     confirmedTime timestamp NOT NULL, 
     uid VARCHAR(18) NOT NULL, 
     PRIMARY KEY (gid, confirmedTime, uid),
-    FOREIGN KEY (gid, confirmedTime) REFERENCES GpqConfirmed(gid, confirmedTime), 
+    FOREIGN KEY (gid, confirmedTime) REFERENCES GpqConfirmed(gid, confirmedTime)
 ); 

@@ -2,17 +2,8 @@ package cmd.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import data.Data;
-import data.JobList;
-import db.SQLFunctions;
 import logic.UsersMethod;
 import model.UserAccount;
-import net.dv8tion.jda.internal.utils.tuple.MutablePair;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
 
 public class WhoAmI extends Command {
 

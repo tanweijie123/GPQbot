@@ -3,14 +3,10 @@ package cmd.mod;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
-import data.Data;
 import logic.GuildMethod;
 import model.UserAccount;
-import net.dv8tion.jda.api.entities.Member;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class AsModShowMember extends Command {
     public AsModShowMember() {

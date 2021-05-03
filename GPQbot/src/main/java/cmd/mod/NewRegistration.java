@@ -3,14 +3,10 @@ package cmd.mod;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
-import data.Data;
 import logic.GuildMethod;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.internal.utils.tuple.MutablePair;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;

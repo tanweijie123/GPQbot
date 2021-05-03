@@ -1,16 +1,11 @@
 package event;
 
 import config.Settings;
-import data.Data;
-import data.JobList;
-import data.PastGPQList;
 import logic.GuildMethod;
 import logic.UsersMethod;
-import model.GPQParticipation;
 import model.UserAccount;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 

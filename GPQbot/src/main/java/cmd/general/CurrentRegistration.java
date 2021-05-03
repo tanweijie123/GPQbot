@@ -2,11 +2,8 @@ package cmd.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import data.Data;
 import logic.GuildMethod;
 import net.dv8tion.jda.api.entities.Message;
-
-import java.net.URL;
 
 public class CurrentRegistration extends Command {
 

@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '5.1.0'
 }
 
-version '0.0.0' //sync it with config.Settings
+version '0.0.1' //sync it with config.Settings
 jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle Quickstart',

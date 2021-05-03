@@ -4,7 +4,6 @@ import cmd.mod.CloseRegistration;
 import cmd.mod.NewRegistration;
 import com.jagrosh.jdautilities.command.*;
 import config.Settings;
-import data.Data;
 import event.ReactionEvent;
 import event.TextEvent;
 import net.dv8tion.jda.api.JDA;
@@ -42,9 +41,7 @@ public class App {
         }
 
         try {
-
-            Data.init();
-            Settings.LOGGER.log(Level.INFO, "Data init complete");
+            Settings.LOGGER.log(Level.INFO, "System booting up . . .");
 
             Scanner sc = new Scanner(new File("token"));
             String token = sc.nextLine();
@@ -116,6 +113,7 @@ public class App {
         builder.addCommands(new AsMod());
     }
 
+    /*
     private static void exportDataToSql() {
         System.out.println("INSERT INTO Guilds\nVALUES(705486807441211442);");
 
@@ -144,4 +142,6 @@ public class App {
 
         System.out.println("~EOF~");
     }
+
+     */
 }

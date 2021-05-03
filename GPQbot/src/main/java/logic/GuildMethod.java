@@ -4,8 +4,6 @@ import db.SQLFunctions;
 import model.UserAccount;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

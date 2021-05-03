@@ -1,6 +1,5 @@
 package logic;
 
-import data.JobList;
 import db.SQLFunctions;
 import model.UserAccount;
 
