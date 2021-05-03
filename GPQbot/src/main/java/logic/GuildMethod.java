@@ -2,6 +2,7 @@ package logic;
 
 import db.SQLFunctions;
 import model.UserAccount;
+import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuildMethod {
@@ -96,6 +98,26 @@ public class GuildMethod {
             System.err.println("Error in performing function insertGpqConfirmation()");
             System.err.println("SQLException: " + ex.getMessage());
             return false;
+        }
+    }
+
+    public static List<Pair<String, Integer>> gpqRanking(String guildId) {
+        try {
+            PreparedStatement stmt = SQLFunctions.gpqRanking();
+            stmt.setString(1, guildId);
+            ResultSet resultSet = stmt.executeQuery();
+
+            List<Pair<String, Integer>> pairs = new ArrayList<>();
+            while(resultSet.next()) {
+                pairs.add(Pair.of(resultSet.getString(1), resultSet.getInt(2)));
+            }
+            stmt.close();
+            return pairs;
+
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function gpqRanking()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return null;
         }
     }
 }

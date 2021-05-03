@@ -53,4 +53,9 @@ public class SQLFunctions {
         String query = "INSERT INTO GpqParticipants VALUES (?,?,?)";
         return SQLConn.getConnection().prepareStatement(query);
     }
+
+    public static PreparedStatement gpqRanking() throws SQLException {
+        String query = "SELECT uid, COUNT(*) FROM GpqParticipants WHERE gid = ? GROUP BY uid ORDER BY COUNT(*) DESC";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
 }
