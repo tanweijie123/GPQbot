@@ -52,9 +52,7 @@ public class ReactionEvent extends ListenerAdapter {
 
                     List<MessageReaction> ebReact = actualEb.getReactions();
 
-                    HashMap<String, String> idToName = new HashMap<>();
                     List<String> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> !x.isBot())
-                            .peek(x -> idToName.put(x.getId(), event.getGuild().getMemberById(x.getId()).getEffectiveName()))
                             .map(x -> x.getId())
                             .collect(Collectors.toList());
 
@@ -64,7 +62,7 @@ public class ReactionEvent extends ListenerAdapter {
                     String reply = "Participants (" + uaList.size()+ "): \n";
                     for (int i = 0; i < uaList.size(); i++) {
                         //TODO; optimise getEffectiveName
-                        reply += String.format("%d. %s\n", i+1, uaList.get(i).gpqString(idToName.get(uaList.get(i))));
+                        reply += String.format("%d. %s\n", i+1, uaList.get(i).gpqString(event.getGuild().getMemberById(uaList.get(i).getUserId()).getEffectiveName()));
                     }
                     event.getChannel().sendMessage(reply).queue();
 
