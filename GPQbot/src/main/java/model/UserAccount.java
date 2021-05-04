@@ -4,16 +4,18 @@ import data.JobList;
 
 public class UserAccount {
 
-    private String guildId;
-    private String userId;
-    private int job;
-    private int floor;
+    private final String guildId;
+    private final String userId;
+    private final int job;
+    private final int floor;
+    private final boolean registered;
 
-    public UserAccount(String guildId, String userId, int job, int floor) {
+    public UserAccount(String guildId, String userId, int job, int floor, boolean registered) {
         this.guildId = guildId;
         this.userId = userId;
         this.job = job;
         this.floor = floor;
+        this.registered = registered;
     }
 
     public String getGuildId() {
@@ -30,6 +32,10 @@ public class UserAccount {
 
     public int getFloor() {
         return this.floor;
+    }
+
+    public boolean isRegistered() {
+        return registered;
     }
 
     public String replyString(String ign) {

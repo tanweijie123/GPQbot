@@ -24,7 +24,7 @@ public class UsersMethod {
                 resultSet = stmt.executeQuery();
                 resultSet.next();
             }
-            UserAccount ua = new UserAccount(guildId, userId, resultSet.getInt("job"), resultSet.getInt("floor") );
+            UserAccount ua = new UserAccount(guildId, userId, resultSet.getInt("job"), resultSet.getInt("floor"), true );
 
             stmt.close();
             return ua;
@@ -47,7 +47,7 @@ public class UsersMethod {
             if (!found) {
                 return null;
             }
-            UserAccount ua = new UserAccount(guildId, userId, resultSet.getInt("job"), resultSet.getInt("floor") );
+            UserAccount ua = new UserAccount(guildId, userId, resultSet.getInt("job"), resultSet.getInt("floor"), true );
 
             stmt.close();
             return ua;
@@ -73,9 +73,9 @@ public class UsersMethod {
                 boolean found = resultSet.next();
                 UserAccount ua = null;
                 if (!found) {
-                    ua = new UserAccount(guildId, s, 0, 0);
+                    ua = new UserAccount(guildId, s, 0, 0, false);
                 } else {
-                    ua = new UserAccount(guildId, s, resultSet.getInt("job"), resultSet.getInt("floor"));
+                    ua = new UserAccount(guildId, s, resultSet.getInt("job"), resultSet.getInt("floor"), true);
                 }
                 uaList.add(ua);
             }

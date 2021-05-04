@@ -127,7 +127,7 @@ public class GuildMethod {
 
             List<UserAccount> uaList = new ArrayList<>();
             while(resultSet.next()) {
-                uaList.add(new UserAccount(guildId, resultSet.getString("uid"), resultSet.getInt("job"), resultSet.getInt("floor")));
+                uaList.add(new UserAccount(guildId, resultSet.getString("uid"), resultSet.getInt("job"), resultSet.getInt("floor"), true));
             }
             stmt.close();
             return uaList;

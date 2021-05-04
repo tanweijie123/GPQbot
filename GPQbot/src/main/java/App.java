@@ -100,6 +100,7 @@ public class App {
         builder.addCommand(new WhereAreYou());
         builder.addCommands(new WhoAreYou());
         builder.addCommand(new WhoAmI());
+        builder.addCommand(new WhoIs());
         builder.addCommand(new SetJob());
         builder.addCommand(new SetFloor());
 
