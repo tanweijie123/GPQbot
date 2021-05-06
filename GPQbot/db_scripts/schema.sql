@@ -7,11 +7,11 @@ DROP TABLE IF EXISTS GpqParticipants CASCADE;
 SET FOREIGN_KEY_CHECKS=1;
 
 CREATE TABLE Guilds (
-	gid VARCHAR(18) PRIMARY KEY
+    gid VARCHAR(18) PRIMARY KEY
 ); 
 
 CREATE TABLE Users (
-	gid VARCHAR(18),
+    gid VARCHAR(18),
     uid VARCHAR(18), 
     job int DEFAULT 0,
     floor int NOT NULL DEFAULT 0,
@@ -20,7 +20,7 @@ CREATE TABLE Users (
 ); 
 
 CREATE TABLE GpqCurrent (
-	gid VARCHAR(18),
+    gid VARCHAR(18),
     created timestamp DEFAULT NOW(), 
     link text NOT NULL,
     PRIMARY KEY (gid),
@@ -28,7 +28,7 @@ CREATE TABLE GpqCurrent (
 ); 
 
 CREATE TABLE GpqConfirmed (
-	gid VARCHAR(18), 
+    gid VARCHAR(18), 
     confirmedTime timestamp DEFAULT NOW(), 
     score int DEFAULT 0,
     PRIMARY KEY (gid, confirmedTime),
@@ -37,7 +37,7 @@ CREATE TABLE GpqConfirmed (
 
 /* This table does not refers to Users table as FK, because some participants might not be registered users */ 
 CREATE TABLE GpqParticipants (
-	gid VARCHAR(18) NOT NULL, 
+    gid VARCHAR(18) NOT NULL, 
     confirmedTime timestamp NOT NULL, 
     uid VARCHAR(18) NOT NULL, 
     PRIMARY KEY (gid, confirmedTime, uid),

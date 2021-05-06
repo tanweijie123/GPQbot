@@ -2,6 +2,11 @@ package model;
 
 import data.JobList;
 
+import java.util.Objects;
+
+/**
+ * UserAccount is an immutable class which carry a set of information pertaining to 1 user.
+ */
 public class UserAccount {
 
     private final String guildId;
@@ -36,6 +41,21 @@ public class UserAccount {
 
     public boolean isRegistered() {
         return registered;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof UserAccount)) return false;
+
+        UserAccount oth = (UserAccount) o;
+        return (oth.guildId.equals(this.guildId) && oth.userId.equals(this.userId)
+                && oth.job == this.job && oth.floor == this.floor && oth.registered == this.registered);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.guildId, this.userId, this.job, this.floor, this.registered);
     }
 
     public String replyString(String ign) {
