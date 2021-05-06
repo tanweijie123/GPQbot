@@ -3,7 +3,7 @@ package cmd.mod;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
-import data.Data;
+import logic.UsersMethod;
 import model.UserAccount;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -38,18 +38,18 @@ public class AsModSetFloor extends Command {
 
         for (int i = 0; i < taggedMemberList.size(); i++) {
             try {
-                UserAccount ua = Data.currentUserList.getByUserKey(taggedMemberList.get(i).getIdLong(), taggedMemberList.get(i).getEffectiveName());
+                //TODO; modify it into batch query
 
-                if (ua == null) {
-                    reply += taggedMemberList.get(i).getAsMention() + " is not registered.\n";
-                } else {
-                    int oldFlr = ua.getFloor();
-                    int newFlr = Integer.parseInt(split[i*2+1]);
-                    if (newFlr < 0 || newFlr > 70)
-                        throw new NumberFormatException();
-                    ua.setFloor(newFlr);
-                    reply += taggedMemberList.get(i).getAsMention() + " floor changed from " + oldFlr + "F to " + newFlr + "F \n";
-                }
+                UserAccount ua = UsersMethod.getOrCreateUser(event.getGuild().getId(), taggedMemberList.get(i).getId());
+
+                int oldFlr = ua.getFloor();
+                int newFlr = Integer.parseInt(split[i*2+1]);
+                if (newFlr < 0 || newFlr > 70)
+                    throw new NumberFormatException();
+
+                UsersMethod.updateFloor(event.getGuild().getId(), taggedMemberList.get(i).getId(), newFlr);
+                reply += taggedMemberList.get(i).getAsMention() + " floor changed from " + oldFlr + "F to " + newFlr + "F \n";
+
             } catch (NumberFormatException nfe) {
                 reply += taggedMemberList.get(i).getAsMention() + " has been given an invalid floor.\n";
             }

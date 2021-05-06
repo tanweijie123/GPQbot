@@ -2,7 +2,7 @@ package cmd.general;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import data.Data;
+import logic.GuildMethod;
 import net.dv8tion.jda.api.entities.Message;
 
 public class CurrentRegistration extends Command {
@@ -14,16 +14,17 @@ public class CurrentRegistration extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        String ret = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong());
-        if (ret == null) {
+
+        String url = GuildMethod.getCurrentGPQLink(event.getGuild().getId());
+        if (url == null) {
             event.reply("There isn't a GPQ available to register!");
         } else {
-            String[] retSplit = ret.split("/");
+            String[] retSplit = url.split("/");
             if (event.getChannel().getIdLong() == Long.parseLong(retSplit[5])) {
                 Message msg = event.getChannel().getHistoryAround(retSplit[6], 1).complete().getRetrievedHistory().get(0);
                 msg.reply("Here is the latest GPQ registration post!").queue();
             } else
-                event.reply("The latest GPQ registration post is here! \n" + ret);
+                event.reply("The latest GPQ registration post is here! \n" + url);
         }
     }
 }

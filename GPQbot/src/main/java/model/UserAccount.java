@@ -1,30 +1,34 @@
 package model;
 
-import data.Data;
 import data.JobList;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
+/**
+ * UserAccount is an immutable class which carry a set of information pertaining to 1 user.
+ */
 public class UserAccount {
 
-    private Long userId;
-    private String ign;
-    private int job;
-    private int floor;
+    private final String guildId;
+    private final String userId;
+    private final int job;
+    private final int floor;
+    private final boolean registered;
 
-    public UserAccount(Long userId) {
+    public UserAccount(String guildId, String userId, int job, int floor, boolean registered) {
+        this.guildId = guildId;
         this.userId = userId;
+        this.job = job;
+        this.floor = floor;
+        this.registered = registered;
     }
 
-    public Long getUserId() {
+    public String getGuildId() {
+        return guildId;
+    }
+
+    public String getUserId() {
         return this.userId;
-    }
-
-    public String getIgn() {
-        return this.ign;
     }
 
     public int getJob() {
@@ -35,21 +39,8 @@ public class UserAccount {
         return this.floor;
     }
 
-    public void setIgn(String ign) {
-        if (ign == null || ign.contains(" "))
-            return;
-        this.ign = ign;
-        Data.currentUserList.save();
-    }
-
-    public void setJob(int job) {
-        this.job = job;
-        Data.currentUserList.save();
-    }
-
-    public void setFloor(int floor) {
-        this.floor = floor;
-        Data.currentUserList.save();
+    public boolean isRegistered() {
+        return registered;
     }
 
     @Override
@@ -58,20 +49,20 @@ public class UserAccount {
         if (!(o instanceof UserAccount)) return false;
 
         UserAccount oth = (UserAccount) o;
-        return (oth.ign.equals(this.ign) && oth.job == this.job && oth.floor == this.floor);
+        return (oth.guildId.equals(this.guildId) && oth.userId.equals(this.userId)
+                && oth.job == this.job && oth.floor == this.floor && oth.registered == this.registered);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.ign, this.job, this.floor);
+        return Objects.hash(this.guildId, this.userId, this.job, this.floor, this.registered);
     }
 
-    @Override
-    public String toString() {
+    public String replyString(String ign) {
         return String.format("[%s (%s)] -> %dF", ign, (job == 0) ? "<no job added>" : JobList.FULL_JOB_LIST[job-1], floor);
     }
 
-    public String printString() {
+    public String gpqString(String ign) {
         return String.format("%s/%s/%d", ign, (job == 0) ? "" : JobList.FULL_JOB_LIST[job-1], floor);
     }
 }

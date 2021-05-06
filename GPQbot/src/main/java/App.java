@@ -4,7 +4,6 @@ import cmd.mod.CloseRegistration;
 import cmd.mod.NewRegistration;
 import com.jagrosh.jdautilities.command.*;
 import config.Settings;
-import data.Data;
 import event.ReactionEvent;
 import event.TextEvent;
 import net.dv8tion.jda.api.JDA;
@@ -42,9 +41,7 @@ public class App {
         }
 
         try {
-
-            Data.init();
-            Settings.LOGGER.log(Level.INFO, "Data init complete");
+            Settings.LOGGER.log(Level.INFO, "System booting up . . .");
 
             Scanner sc = new Scanner(new File("token"));
             String token = sc.nextLine();
@@ -101,6 +98,7 @@ public class App {
         builder.addCommand(new WhereAreYou());
         builder.addCommands(new WhoAreYou());
         builder.addCommand(new WhoAmI());
+        builder.addCommand(new WhoIs());
         builder.addCommand(new SetJob());
         builder.addCommand(new SetFloor());
 

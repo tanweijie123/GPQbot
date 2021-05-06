@@ -3,12 +3,8 @@ package cmd.mod;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
-import data.Data;
+import logic.GuildMethod;
 import net.dv8tion.jda.api.entities.Message;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class CloseRegistration extends Command {
 
@@ -21,7 +17,7 @@ public class CloseRegistration extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        String anyExistingReg = Data.currentGPQList.getByGuildKey(event.getGuild().getIdLong());
+        String anyExistingReg = GuildMethod.getCurrentGPQLink(event.getGuild().getId());
 
         if (anyExistingReg == null) {
             event.reply("No opened registration to close");
@@ -31,7 +27,7 @@ public class CloseRegistration extends Command {
         String[] retSplit = anyExistingReg.split("/");
 
         if (event.getArgs().equals("force")) {
-            Data.currentGPQList.remove(event.getGuild().getIdLong()); //force delete
+            GuildMethod.deleteCurrentGPQLink(event.getGuild().getId());
             Message actualEb = event.getGuild().getTextChannelById(retSplit[5]).getHistoryAround(retSplit[6], 1).complete().getRetrievedHistory().get(0);
             if (actualEb.isPinned())
                 actualEb.unpin().queue();
