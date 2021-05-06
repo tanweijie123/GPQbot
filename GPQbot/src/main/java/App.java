@@ -2,6 +2,7 @@ import cmd.general.*;
 import cmd.mod.AsMod;
 import cmd.mod.CloseRegistration;
 import cmd.mod.NewRegistration;
+import cmd.mod.PurgeTo;
 import com.jagrosh.jdautilities.command.*;
 import config.Settings;
 import event.ReactionEvent;
@@ -55,6 +56,7 @@ public class App {
             builder.setPrefix("!nyan ");
             builder.setActivity(Activity.playing("with Moo"));
             builder.setHelpWord("help");
+            builder.setEmojis(":white_check_mark:", ":warning:", ":bangbang:");
 
             addCommands(builder);
 
@@ -110,5 +112,6 @@ public class App {
         builder.addCommands(new CloseRegistration());
 
         builder.addCommands(new AsMod());
+        builder.addCommand(new PurgeTo());
     }
 }
