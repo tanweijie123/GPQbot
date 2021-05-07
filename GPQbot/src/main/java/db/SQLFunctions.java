@@ -63,4 +63,17 @@ public class SQLFunctions {
         String query = "SELECT uid, job, floor FROM Users WHERE gid = ? ORDER BY floor DESC";
         return SQLConn.getConnection().prepareStatement(query);
     }
+
+    public static PreparedStatement appendMemberToCurrent() throws SQLException {
+        String query = "INSERT INTO GpqCurrentAddMem " +
+                "SELECT * FROM (SELECT ?, ?) AS temp WHERE NOT EXISTS (" +
+                "SELECT 1 FROM GpqCurrentAddMem WHERE gid = ? AND uid = ?" +
+                ")";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
+
+    public static PreparedStatement getAppendedMembersToCurrent() throws SQLException {
+        String query = "SELECT uid FROM GpqCurrentAddMem WHERE gid = ?";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
 }

@@ -27,6 +27,14 @@ CREATE TABLE GpqCurrent (
     FOREIGN KEY (gid) REFERENCES Guilds(gid)
 ); 
 
+CREATE TABLE GpqCurrentAddMem (
+    gid VARCHAR(18), 
+    uid VARCHAR(18),
+    PRIMARY KEY (gid, uid),
+    FOREIGN KEY (gid) REFERENCES GpqCurrent(gid)  ON DELETE CASCADE,
+    FOREIGN KEY (gid, uid) REFERENCES Users(gid, uid)
+);
+
 CREATE TABLE GpqConfirmed (
     gid VARCHAR(18), 
     confirmedTime timestamp DEFAULT NOW(), 

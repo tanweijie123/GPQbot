@@ -1,8 +1,5 @@
 import cmd.general.*;
-import cmd.mod.AsMod;
-import cmd.mod.CloseRegistration;
-import cmd.mod.NewRegistration;
-import cmd.mod.PurgeTo;
+import cmd.mod.*;
 import com.jagrosh.jdautilities.command.*;
 import config.Settings;
 import event.ReactionEvent;
@@ -110,6 +107,7 @@ public class App {
 
         builder.addCommand(new NewRegistration());
         builder.addCommands(new CloseRegistration());
+        builder.addCommand(new AddMembers());
 
         builder.addCommands(new AsMod());
         builder.addCommand(new PurgeTo());

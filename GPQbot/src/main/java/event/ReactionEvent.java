@@ -48,13 +48,18 @@ public class ReactionEvent extends ListenerAdapter {
                     if (actualEb.isPinned())
                         actualEb.unpin().queue();
 
-                    GuildMethod.deleteCurrentGPQLink(event.getGuild().getId());  //once finalised, it will be removed from current.
-
                     List<MessageReaction> ebReact = actualEb.getReactions();
 
                     List<String> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> !x.isBot())
                             .map(x -> x.getId())
                             .collect(Collectors.toList());
+
+                    GuildMethod.getAppendedMembersToCurrent(event.getGuild().getId())
+                            .stream().forEach(x -> {
+                                if (!usrAttending.contains(x)) {
+                                    usrAttending.add(x);
+                                }
+                    } );
 
                     List<UserAccount> uaList = UsersMethod.getUsers(event.getGuild().getId(), usrAttending);
                     uaList.sort( (x,y) -> Integer.compare(y.getFloor(), x.getFloor()) );
@@ -67,6 +72,9 @@ public class ReactionEvent extends ListenerAdapter {
                     event.getChannel().sendMessage(reply).queue();
 
                     GuildMethod.insertGpqConfirmation(event.getGuild().getId(), uaList);
+
+                    //clean up -> delete GpqCurrent record from db
+                    GuildMethod.deleteCurrentGPQLink(event.getGuild().getId());
 
                     //TODO: send excel output
                     //event.getUser().openPrivateChannel().flatMap(hi -> hi.sendMessage("Hello~")).queue();

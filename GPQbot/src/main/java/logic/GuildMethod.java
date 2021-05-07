@@ -138,4 +138,47 @@ public class GuildMethod {
             return null;
         }
     }
+
+    public static boolean appendMemberToCurrent(String guildId, List<String> userId) {
+        try {
+            PreparedStatement stmt = SQLFunctions.appendMemberToCurrent();
+            stmt.setString(1, guildId);
+            stmt.setString(3, guildId);
+
+            for (String s : userId) {
+                stmt.setString(2, s);
+                stmt.setString(4, s);
+                stmt.executeUpdate();
+            }
+
+            stmt.close();
+            return true;
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function appendMemberToCurrent()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    public static List<String> getAppendedMembersToCurrent(String guildId) {
+        try {
+            PreparedStatement stmt = SQLFunctions.getAppendedMembersToCurrent();
+            stmt.setString(1, guildId);
+            ResultSet resultSet = stmt.executeQuery();
+
+            List<String> uidList = new ArrayList<>();
+            while(resultSet.next()) {
+                uidList.add(resultSet.getString(1));
+            }
+            stmt.close();
+            return uidList;
+        } catch (SQLException ex) {
+            System.err.println("Error in performing function appendMemberToCurrent()");
+            System.err.println("SQLException: " + ex.getMessage());
+            return null;
+        }
+    }
+
+
+
 }
