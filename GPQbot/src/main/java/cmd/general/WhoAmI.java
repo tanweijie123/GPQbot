@@ -19,6 +19,9 @@ public class WhoAmI extends Command {
             return;
         }
 
+        if (event.getMember().getUser().isBot())
+            return;
+
         UserAccount ua = UsersMethod.getOrCreateUser(event.getGuild().getId(), event.getAuthor().getId());
         event.reply("Hellonyaa~ This is what I have of you:\n" + ua.replyString(event.getMember().getEffectiveName()));
 
