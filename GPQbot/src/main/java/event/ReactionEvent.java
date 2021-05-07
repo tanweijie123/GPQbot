@@ -3,6 +3,7 @@ package event;
 import config.Settings;
 import excelgen.Generator;
 import logic.GuildMethod;
+import logic.RulesMethod;
 import logic.UsersMethod;
 import model.UserAccount;
 import model.UserAccountExport;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -44,7 +44,7 @@ public class ReactionEvent extends ListenerAdapter {
 
                 if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
 
-                    String datetime = ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("ddMMyyyy HHmmss"));
+                    String datetime = ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("ddMMyy HHmmss"));
                     event.getChannel().sendMessage("Confirmed GPQ at " + datetime).queue();
 
                     String[] creationMsg = GuildMethod.getCurrentGPQLink(event.getGuild().getId()).split("/");
@@ -73,36 +73,42 @@ public class ReactionEvent extends ListenerAdapter {
 
 
                     List<UserAccountExport> uaeList = new ArrayList<>();
-                    String reply = "Participants (" + uaList.size()+ "): \n";
+                    StringBuilder sbReply = new StringBuilder("Participants (" + uaList.size()+ "): \n");
                     for (int i = 0; i < uaList.size(); i++) {
                         UserAccount ua = uaList.get(i);
                         String ign = event.getGuild().getMemberById(uaList.get(i).getUserId()).getEffectiveName();
 
-                        reply += String.format("%d. %s\n", i+1, ua.gpqString(ign));
+                        sbReply.append(String.format("%d. %s\n", i+1, ua.gpqString(ign)));
                         uaeList.add(new UserAccountExport(ua.getGuildId(), ua.getUserId(), ua.getJob(), ua.getFloor(), ua.isRegistered(), ign));
                     }
-                    event.getChannel().sendMessage(reply).queue();
 
+                    //create a new thread to generate the excel file;
+                    Thread t = new Thread(() -> {
+                        File generatedExcel = new File("excelgen/" + event.getGuild().getId() + "_" + datetime + ".xlsx");
+                        try {
+                            generatedExcel.createNewFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        Generator gen = new Generator(uaeList, RulesMethod.getRules(event.getGuild().getId()), generatedExcel);
+                        gen.generate();
+
+                        //send the generated excel file to user's dm.
+                        event.getUser().openPrivateChannel().flatMap(hi ->
+                                hi.sendMessage("This is the generated excel file for your gpq.\n")
+                                        .addFile(generatedExcel)).queue();
+
+                    });
+                    t.start();
+
+                    //while generating new file, send the list of participants, insert into db, and delete reaction.
+                    String reply = sbReply.toString();
+                    event.getChannel().sendMessage(reply).queue();
                     GuildMethod.insertGpqConfirmation(event.getGuild().getId(), uaList);
 
                     //clean up -> delete GpqCurrent record from db
                     GuildMethod.deleteCurrentGPQLink(event.getGuild().getId());
-
-                    File generatedExcel = new File("excelgen/" + event.getGuild().getId() + "_" + datetime + ".xlsx");
-                    try {
-                        generatedExcel.createNewFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    //TODO; change default list to custom rule list
-                    Generator gen = new Generator(uaeList, new ArrayList<>(),event.getGuild().getId(), generatedExcel);
-                    gen.generate();
-                    
-                    //send the generated excel file to user's dm.
-                    event.getUser().openPrivateChannel().flatMap(hi ->
-                            hi.sendMessage("This is the generated excel file for your gpq.\n")
-                                    .addFile(generatedExcel)).queue();
                 }
 
                 reactedMsg.delete().queue();

@@ -9,13 +9,11 @@ import java.util.List;
 public class Generator {
     private List<UserAccountExport> uaeList;
     private List<Rule> ruleList;
-    private String guildId;
     private File filepath;
 
-    public Generator(List<UserAccountExport> uaeList, List<Rule> ruleList, String guildId, File filepath) {
+    public Generator(List<UserAccountExport> uaeList, List<Rule> ruleList, File filepath) {
         this.uaeList = uaeList;
         this.ruleList = ruleList;
-        this.guildId = guildId;
         this.filepath = filepath;
     }
 
@@ -24,6 +22,7 @@ public class Generator {
         Assignment.loadTunnel();
 
         for (Rule rule : ruleList) {
+            System.out.println("Implementing rule: " + rule.toString());
             Assignment.runRule(rule);
         }
 

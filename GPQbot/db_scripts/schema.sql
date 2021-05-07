@@ -1,7 +1,9 @@
 SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS Guilds CASCADE;
 DROP TABLE IF EXISTS Users CASCADE; 
+DROP TABLE IF EXISTS Rules CASCADE; 
 DROP TABLE IF EXISTS GpqCurrent CASCADE; 
+DROP TABLE IF EXISTS GpqCurrentAddMem CASCADE; 
 DROP TABLE IF EXISTS GpqConfirmed CASCADE; 
 DROP TABLE IF EXISTS GpqParticipants CASCADE;
 SET FOREIGN_KEY_CHECKS=1;
@@ -17,6 +19,17 @@ CREATE TABLE Users (
     floor int NOT NULL DEFAULT 0,
     PRIMARY KEY (gid, uid),
     FOREIGN KEY (gid) REFERENCES Guilds(gid)
+); 
+
+CREATE TABLE Rules (
+    gid VARCHAR(18),
+    priority int, /* the rows of rules by the user */ 
+    idx int NOT NULL, /* the rule list number */ 
+    content text NOT NULL,
+    PRIMARY KEY (gid, priority),
+    FOREIGN KEY (gid) REFERENCES Guilds(gid),
+    CHECK (idx >= 0 AND idx <= 0), /* sync to RuleList.java */  
+    CHECK (priority >= 1)
 ); 
 
 CREATE TABLE GpqCurrent (

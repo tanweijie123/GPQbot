@@ -101,7 +101,7 @@ public class Assignment {
     }
 
     public static void runRule(Rule rule) {
-        RuleList.getFunction(rule).accept(participantList, tunnelList);
+        rule.getFunc().accept(participantList, tunnelList);
     }
 
     /** HELPER METHODS */

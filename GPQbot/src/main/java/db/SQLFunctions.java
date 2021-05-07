@@ -76,4 +76,9 @@ public class SQLFunctions {
         String query = "SELECT uid FROM GpqCurrentAddMem WHERE gid = ?";
         return SQLConn.getConnection().prepareStatement(query);
     }
+
+    public static PreparedStatement getRules() throws SQLException {
+        String query = "SELECT priority, idx, content FROM Rules WHERE gid = ? ORDER BY priority";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
 }
