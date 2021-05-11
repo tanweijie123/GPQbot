@@ -28,7 +28,7 @@ CREATE TABLE Rules (
     content text NOT NULL,
     PRIMARY KEY (gid, priority),
     FOREIGN KEY (gid) REFERENCES Guilds(gid),
-    CHECK (idx >= 0 AND idx <= 0), /* sync to RuleList.java */  
+    CHECK (idx >= 0 AND idx <= 1), /* sync to RuleList.java */  
     CHECK (priority >= 1)
 ); 
 
