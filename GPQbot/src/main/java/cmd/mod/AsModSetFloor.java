@@ -40,6 +40,9 @@ public class AsModSetFloor extends Command {
             try {
                 //TODO; modify it into batch query
 
+                if (taggedMemberList.get(i).getUser().isBot())
+                    continue;
+
                 UserAccount ua = UsersMethod.getOrCreateUser(event.getGuild().getId(), taggedMemberList.get(i).getId());
 
                 int oldFlr = ua.getFloor();
