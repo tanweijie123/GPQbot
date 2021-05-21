@@ -4,9 +4,11 @@ import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
 import logic.GuildMethod;
-import model.UserAccount;
+import model.UserAccountExport;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AsModShowMember extends Command {
     public AsModShowMember() {
@@ -20,10 +22,15 @@ public class AsModShowMember extends Command {
     protected void execute(CommandEvent event) {
         String reply = "Current Guild Members registered with NyanBot: \n";
 
-        List<UserAccount> uaList = GuildMethod.getGuildMembers(event.getGuild().getId());
+        List<UserAccountExport> uaeList = GuildMethod.getGuildMembers(event.getGuild().getId())
+                .stream()
+                .map(x -> new UserAccountExport(x.getGuildId(), x.getUserId(), x.getJob(), x.getFloor(), x.isRegistered(),
+                        event.getGuild().getMemberById(x.getUserId()).getEffectiveName()))
+                .sorted(Comparator.comparing(UserAccountExport::getIgn))
+                .collect(Collectors.toList());
 
-        for (UserAccount ua : uaList) {
-            reply += ua.replyString(event.getGuild().getMemberById(ua.getUserId()).getEffectiveName()) + "\n";
+        for (UserAccountExport uae : uaeList) {
+            reply += uae.toString() + "\n";
         }
 
         event.reply(reply);
