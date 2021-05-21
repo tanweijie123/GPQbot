@@ -32,7 +32,12 @@ public class GPQRanking extends Command {
             if (top20.get(i).getLeft().equals(event.getAuthor().getId())) {
                 myRank = rank;
             }
-            String ign = event.getGuild().getMemberById(top20.get(i).getLeft()).getEffectiveName();
+            String ign = "NOT IN SERVER - " + top20.get(i).getLeft();
+            try {
+                ign = event.getGuild().getMemberById(top20.get(i).getLeft()).getEffectiveName();
+            } catch (NullPointerException e) {
+                //ign will use default if not found.
+            }
             reply += String.format("%d. %s -> %d time(s) \n", rank, ign, top20.get(i).getRight());
         }
 

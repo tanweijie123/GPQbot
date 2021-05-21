@@ -1,3 +1,4 @@
+import cmd.Help;
 import cmd.general.*;
 import cmd.mod.*;
 import com.jagrosh.jdautilities.command.*;
@@ -8,6 +9,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.io.File;
@@ -16,7 +19,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
@@ -53,11 +58,20 @@ public class App {
             builder.setPrefix("!nyan ");
             builder.setActivity(Activity.playing("with Moo"));
             builder.setHelpWord("help");
+            builder.setHelpConsumer(x -> new Help().run(x));
             builder.setEmojis(":white_check_mark:", ":warning:", ":bangbang:");
 
             addCommands(builder);
 
             builder.setListener(new CommandListener() {
+                @Override
+                public void onNonCommandMessage(MessageReceivedEvent event) {
+                    if (event.getMessage().getContentRaw().startsWith("!nyan ")) {
+                        event.getMessage().reply("https://youtu.be/dQw4w9WgXcQ").queue();
+                        Settings.LOGGER.info("[nonCommand] " + event.getAuthor().getAsTag() + "->" + event.getMessage().getContentRaw());
+                    }
+                }
+
                 @Override
                 public void onCompletedCommand(CommandEvent event, Command command) {
                     if (event.getChannelType() == ChannelType.PRIVATE) {
@@ -85,6 +99,8 @@ public class App {
 
             Settings.LOGGER.log(Level.INFO, "Bot is ready and awaiting. . .");
             jda.awaitReady();
+
+            ScheduledExecutorService
 
         } catch (Exception e) {
             System.out.println("Bot Token Failed!");

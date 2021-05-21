@@ -14,11 +14,6 @@ public class WhoAmI extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        if (event.getMember().getEffectiveName().contains(" ")) {
-            event.reply("I do not accept nickname / IGN with a space.");
-            return;
-        }
-
         if (event.getMember().getUser().isBot())
             return;
 

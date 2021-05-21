@@ -11,8 +11,8 @@ public class UserAccount {
 
     private final String guildId;
     private final String userId;
-    private final int job; //1-based. 0 refers to no job assigned
-    private final int floor;
+    protected final int job; //1-based. 0 refers to no job assigned
+    protected final int floor;
     private final boolean registered;
 
     public UserAccount(String guildId, String userId, int job, int floor, boolean registered) {

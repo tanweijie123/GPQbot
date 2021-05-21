@@ -3,6 +3,7 @@ package cmd.general;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
+import data.JobList;
 import logic.UsersMethod;
 import model.UserAccount;
 
@@ -24,7 +25,7 @@ public class SetJob extends Command {
         int job = 0;
         try {
             job = Integer.parseInt(event.getArgs().split(" ")[0]);
-            if (job < 1 || job > 46) {
+            if (job < 1 || job > JobList.FULL_JOB_LIST.length) {
                 event.reply("Oof.. Invalid number..");
                 return;
             }
