@@ -22,11 +22,11 @@ public class GPQRanking extends Command {
 
         int rank = 1;
         int myRank = -1;
-        int max = Math.min(top20.size(), LIMIT);
 
         String reply = "Top 20 Attendance for GPQ:\n";
-        for(int i = 0; i < max; i++) {
+        for(int i = 0; i < top20.size(); i++) {
             if (i != 0 && (top20.get(i).getRight() != top20.get(i-1).getRight())) {
+                if (i >= LIMIT) break; //to stop after showing all the same ranked
                 rank = i + 1;
             }
             if (top20.get(i).getLeft().equals(event.getAuthor().getId())) {

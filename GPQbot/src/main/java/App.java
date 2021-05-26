@@ -9,9 +9,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.RestAction;
+import scheduler.Scheduler;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,9 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
@@ -51,7 +50,9 @@ public class App {
             JDA jda = JDABuilder.create(token,
                     GatewayIntent.GUILD_MEMBERS,
                     GatewayIntent.GUILD_MESSAGES,
-                    GatewayIntent.GUILD_MESSAGE_REACTIONS).build();
+                    GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                    GatewayIntent.GUILD_EMOJIS
+            ).build();
 
             CommandClientBuilder builder = new CommandClientBuilder();
             builder.setOwnerId("419674934072180736");
@@ -66,6 +67,17 @@ public class App {
             builder.setListener(new CommandListener() {
                 @Override
                 public void onNonCommandMessage(MessageReceivedEvent event) {
+                    /*
+                    if (event.getMessage().getContentRaw().equalsIgnoreCase("!nyan setup flagalert")) {
+                        event.getChannel().sendMessage("React to the clock for opt-in for flag alerts!").queue(x -> {
+                            x.addReaction("U+1F55B").queue();
+                            x.addReaction("U+1F556").queue();
+                            x.addReaction("U+1F558").queue();
+                        });
+                        event.getMessage().delete().queue();
+                        return;
+                    }
+                     */
                     if (event.getMessage().getContentRaw().startsWith("!nyan ")) {
                         event.getMessage().reply("https://youtu.be/dQw4w9WgXcQ").queue();
                         Settings.LOGGER.info("[nonCommand] " + event.getAuthor().getAsTag() + "->" + event.getMessage().getContentRaw());
@@ -100,7 +112,11 @@ public class App {
             Settings.LOGGER.log(Level.INFO, "Bot is ready and awaiting. . .");
             jda.awaitReady();
 
-            ScheduledExecutorService
+            //initialise scheduler
+            Settings.LOGGER.log(Level.INFO, "Initialising scheduler");
+            Scheduler.init(jda);
+            Settings.LOGGER.log(Level.INFO, "Initialised scheduler");
+
 
         } catch (Exception e) {
             System.out.println("Bot Token Failed!");
