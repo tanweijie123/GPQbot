@@ -3,6 +3,7 @@ import cmd.general.*;
 import cmd.mod.*;
 import com.jagrosh.jdautilities.command.*;
 import config.Settings;
+import event.NotesEvent;
 import event.ReactionEvent;
 import event.TextEvent;
 import net.dv8tion.jda.api.JDA;
@@ -102,8 +103,7 @@ public class App {
                 }
             });
 
-            jda.addEventListener(new ReactionEvent());
-            jda.addEventListener(new TextEvent());
+            jda.addEventListener(new ReactionEvent(), new TextEvent(), new NotesEvent());
 
             CommandClient commandClient = builder.build();
             Settings.botCommand = commandClient;
