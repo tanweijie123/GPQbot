@@ -19,6 +19,7 @@ public class Assignment {
 
     public static void loadParticipants(List<UserAccountExport> uaeList) {
         participantList = uaeList;
+        tunnelList = new ArrayList<>();
     }
 
     public static void loadTunnel() {
