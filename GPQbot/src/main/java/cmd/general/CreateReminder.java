@@ -42,8 +42,7 @@ public class CreateReminder extends Command {
         }
 
         Reminder reminder = new Reminder(0, event.getGuild().getId(), event.getAuthor().getId(),
-                ZonedDateTime.now(), datetime,
-                event.getMessage().getJumpUrl(), event.getMessage().getReferencedMessage().getJumpUrl());
+                ZonedDateTime.now(), datetime, event.getMessage().getJumpUrl());
 
         if (ReminderMethod.insertReminder(reminder)) {
             event.reply("You will be reminded of this message on " + Utility.toDateTimeString(datetime) + "\n" +

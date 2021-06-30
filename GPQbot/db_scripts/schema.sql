@@ -78,6 +78,6 @@ CREATE TABLE Reminder (
     created_date datetime NOT NULL DEFAULT NOW(),
     expected_date datetime NOT NULL,
     reminder_link text NOT NULL,
-    source_link text NOT NULL,
-    FOREIGN KEY (gid, uid) REFERENCES Users(gid, uid)
+    FOREIGN KEY (gid, uid) REFERENCES Users(gid, uid),
+    CHECK (expected_date > Reminder.created_date)
 );

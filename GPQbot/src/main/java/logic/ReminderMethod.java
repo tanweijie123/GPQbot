@@ -27,7 +27,7 @@ public class ReminderMethod {
                         resultSet.getString(3),
                         resultSet.getTimestamp(4).toInstant().atZone(ZoneId.of("GMT+8")),
                         resultSet.getTimestamp(5).toInstant().atZone(ZoneId.of("GMT+8")),
-                        resultSet.getString(6), resultSet.getString(7));
+                        resultSet.getString(6));
                 reminderList.add(r);
             }
             stmt.close();
@@ -47,7 +47,6 @@ public class ReminderMethod {
             stmt.setTimestamp(3, Timestamp.from(reminder.createdDate.toInstant()));
             stmt.setTimestamp(4, Timestamp.from(reminder.expectedDate.toInstant()));
             stmt.setString(5, reminder.reminderLink);
-            stmt.setString(6, reminder.sourceLink);
 
             int update = stmt.executeUpdate();
 
