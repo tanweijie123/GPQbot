@@ -81,4 +81,14 @@ public class SQLFunctions {
         String query = "SELECT priority, idx, content FROM Rules WHERE gid = ? ORDER BY priority";
         return SQLConn.getConnection().prepareStatement(query);
     }
+    public static PreparedStatement insertReminder() throws SQLException {
+        String query = "INSERT INTO Reminder(gid, uid, created_date, expected_date, reminder_link, source_link) " +
+                "VALUES (?, ?, ?, ?, ?, ?);";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
+
+    public static PreparedStatement getReminders() throws SQLException {
+        String query = "SELECT * FROM Reminder WHERE expected_date >= ? AND expected_date < ?";
+        return SQLConn.getConnection().prepareStatement(query);
+    }
 }

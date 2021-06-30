@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import scheduler.Scheduler;
+import util.Utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class App {
         FileHandler fh;
 
         try {
-            File file = new File("log/" + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss")) + ".log");
+            File file = new File("log/" + Utility.toDateTimeStringFileUsage(ZonedDateTime.now()) + ".log");
             file.createNewFile();
             fh = new FileHandler(file.getPath());
             Settings.LOGGER.addHandler(fh);
@@ -132,6 +133,7 @@ public class App {
         builder.addCommand(new WhoIs());
         builder.addCommand(new SetJob());
         builder.addCommand(new SetFloor());
+        builder.addCommand(new CreateReminder());
 
         builder.addCommand(new CurrentRegistration());
         builder.addCommand(new GetJobList());

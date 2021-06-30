@@ -14,6 +14,7 @@ public class Scheduler {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
         scheduleFlagAlert(scheduler, jda);
         scheduleClearMessage(scheduler, jda);
+        scheduleReminderMessage(scheduler, jda);
     }
 
     private static void scheduleFlagAlert(ScheduledExecutorService scheduler, JDA jda) {
@@ -44,5 +45,14 @@ public class Scheduler {
             alarm0 = alarm0.plusDays(1);
         }
         scheduler.scheduleAtFixedRate(ClearMessage.clearAfterMessage(jda), Duration.between(now, alarm0).toSeconds(), 86400, TimeUnit.SECONDS);
+    }
+
+    private static void scheduleReminderMessage(ScheduledExecutorService scheduler, JDA jda) {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT+8"));
+        ZonedDateTime alarm0 = ZonedDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), now.getHour(), now.getMinute(), 0, 0, ZoneId.of("GMT+8"));
+        if (alarm0.isBefore(now)) {
+            alarm0 = alarm0.plusMinutes(1).plusSeconds(1);
+        }
+        scheduler.scheduleAtFixedRate(SendReminder.sendReminder(jda), Duration.between(now, alarm0).toSeconds(), 60, TimeUnit.SECONDS);
     }
 }

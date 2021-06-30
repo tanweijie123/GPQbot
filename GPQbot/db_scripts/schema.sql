@@ -63,4 +63,21 @@ CREATE TABLE GpqParticipants (
     uid VARCHAR(18) NOT NULL, 
     PRIMARY KEY (gid, confirmedTime, uid),
     FOREIGN KEY (gid, confirmedTime) REFERENCES GpqConfirmed(gid, confirmedTime)
-); 
+);
+
+/* This table is used to retrieve reminder messages
+   created_date refers to the date this reminder message is created.
+   expected_date refers to the date this reminder should be sent.
+   reminder_link refers to the link where the user send the reminder command
+   source_link refers to the message link where the user would like to be reminded of.
+   */
+CREATE TABLE Reminder (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gid VARCHAR(18) NOT NULL,
+    uid VARCHAR(18) NOT NULL,
+    created_date datetime NOT NULL DEFAULT NOW(),
+    expected_date datetime NOT NULL,
+    reminder_link text NOT NULL,
+    source_link text NOT NULL,
+    FOREIGN KEY (gid, uid) REFERENCES Users(gid, uid)
+);
