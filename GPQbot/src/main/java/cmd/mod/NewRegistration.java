@@ -6,6 +6,7 @@ import config.Settings;
 import logic.GuildMethod;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import util.Utility;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,7 +36,7 @@ public class NewRegistration extends Command {
         eb.setThumbnail(event.getGuild().getIconUrl());
         eb.setDescription(event.getArgs());
         eb.setColor(java.awt.Color.GREEN);
-        eb.setFooter("This request is made by " + event.getMember().getEffectiveName() + " on " + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+        eb.setFooter("This request is made by " + event.getMember().getEffectiveName() + " on " + Utility.toDateTimeString(ZonedDateTime.now()));
         Message msg = event.getChannel().sendMessage(eb.build()).complete();
         msg.addReaction("U+2705").queue();
         msg.pin().queue();

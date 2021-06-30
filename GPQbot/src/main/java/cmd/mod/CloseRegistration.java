@@ -37,7 +37,6 @@ public class CloseRegistration extends Command {
         }
 
         //TODO: check if existingReg is manually deleted.
-        //Message msg = event.getChannel().sendMessage("Closing registration for " + anyExistingReg + " and getting participants for today (" + ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("EEEE")) + ")?").complete();
         Message msg;
 
         if (event.getChannel().getIdLong() == Long.parseLong(retSplit[5])) {

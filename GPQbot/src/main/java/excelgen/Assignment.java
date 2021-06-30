@@ -5,8 +5,10 @@ import model.alloc.Team;
 import model.alloc.Tunnel;
 import model.rule.Rule;
 import model.rule.RuleList;
+import util.Utility;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,7 +42,7 @@ public class Assignment {
         tunnelList.sort(Comparator.comparingInt(x -> x.getId()));
         List<String> export = new ArrayList<>();
 
-        export.add(",,Generated at: " + DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(LocalDateTime.now()));
+        export.add(",,Generated at: " + Utility.toDateTimeString(ZonedDateTime.now()));
 
         for (int i = 0; i < tunnelList.size(); i++) {
             Tunnel t = tunnelList.get(i);

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import util.Utility;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -18,7 +19,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,13 +44,15 @@ public class ReactionEvent extends ListenerAdapter {
 
                 if (Arrays.equals(event.getReactionEmote().getAsReactionCode().getBytes(StandardCharsets.UTF_8), check)) {
 
-                    String datetime = ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern("ddMMyy HHmmss"));
-                    event.getChannel().sendMessage("Confirmed GPQ at " + datetime).queue();
+                    ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT+8"));
+                    event.getChannel().sendMessage("Confirmed GPQ at " + Utility.toDateTimeString(now)).queue();
 
-                    String[] creationMsg = GuildMethod.getCurrentGPQLink(event.getGuild().getId()).split("/");
+                    Message actualEb = Utility.convertStringToDiscordMessage(event.getJDA(), GuildMethod.getCurrentGPQLink(event.getGuild().getId()));
+                    if (actualEb == null) {
+                        //Message may have been deleted, or not found from database.
+                        return;
+                    }
 
-                    //TODO: check if existingReg is manually deleted.
-                    Message actualEb = event.getGuild().getTextChannelById(creationMsg[5]).getHistoryAround(creationMsg[6], 1).complete().getRetrievedHistory().get(0);
                     if (actualEb.isPinned())
                         actualEb.unpin().queue();
 
@@ -84,7 +86,7 @@ public class ReactionEvent extends ListenerAdapter {
 
                     //create a new thread to generate the excel file;
                     Thread t = new Thread(() -> {
-                        File generatedExcel = new File("excelgen/" + event.getGuild().getId() + "_" + datetime + ".xlsx");
+                        File generatedExcel = new File("excelgen/" + event.getGuild().getId() + "_" + Utility.toDateTimeStringFileUsage(now) + ".xlsx");
                         try {
                             generatedExcel.createNewFile();
                         } catch (IOException e) {
@@ -105,7 +107,7 @@ public class ReactionEvent extends ListenerAdapter {
                     //while generating new file, send the list of participants, insert into db, and delete reaction.
                     String reply = sbReply.toString();
                     event.getChannel().sendMessage(reply).queue();
-                    GuildMethod.insertGpqConfirmation(event.getGuild().getId(), uaList);
+                    GuildMethod.insertGpqConfirmation(event.getGuild().getId(), uaList, now);
 
                     //clean up -> delete GpqCurrent record from db
                     GuildMethod.deleteCurrentGPQLink(event.getGuild().getId());

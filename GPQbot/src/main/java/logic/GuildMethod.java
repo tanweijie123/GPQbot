@@ -7,6 +7,7 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -71,19 +72,19 @@ public class GuildMethod {
 
     }
 
-    public static boolean insertGpqConfirmation(String guildId, List<UserAccount> uaList) {
-        String timestamp = ZonedDateTime.now(ZoneId.of("GMT+8")).format(DateTimeFormatter.ofPattern(("yyyy-MM-dd HH:mm:ss")));
+    public static boolean insertGpqConfirmation(String guildId, List<UserAccount> uaList, ZonedDateTime createdDateTime) {
+        Timestamp timestamp = Timestamp.from(createdDateTime.toInstant());
         try {
             PreparedStatement stmt = SQLFunctions.insertGpqConfirmed();
             stmt.setString(1, guildId);
-            stmt.setString(2, timestamp);
+            stmt.setTimestamp(2, timestamp);
             stmt.executeUpdate();
             stmt.close();
 
             PreparedStatement stmt3 = SQLFunctions.insertGpqParticipants();
             for (UserAccount ua : uaList) {
                 stmt3.setString(1, guildId);
-                stmt3.setString(2, timestamp);
+                stmt3.setTimestamp(2, timestamp);
                 stmt3.setString(3, ua.getUserId());
                 stmt3.addBatch();
             }
