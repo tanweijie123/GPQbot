@@ -4,11 +4,8 @@ import logic.ReminderMethod;
 import model.Reminder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import util.Utility;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public class SendReminder {
@@ -24,7 +21,7 @@ public class SendReminder {
                 try {
                     //TODO: add reaction so more people can share reminder.
 
-                    Message msg = Utility.convertStringToDiscordMessage(jda, r.sourceLink);
+                    Message msg = Utility.convertStringToDiscordMessage(jda, r.reminderLink);
 
                     String toSend = String.format("<@%s> You have requested for a reminder on %s for this message.",
                             r.uid, Utility.toDateTimeString(r.createdDate));

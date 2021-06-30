@@ -22,11 +22,6 @@ public class CreateReminder extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        if (event.getMessage().getReferencedMessage() == null) {
-            event.reply("You would need to reply to the message for me to create a reminder.");
-            return;
-        }
-
         if (event.getArgs().isEmpty()) {
             event.reply("I would need a date for this command to work (Eg. \"" + Settings.botCommand.getPrefix() +"remindme 30/06/2021 1300\")");
             return;
@@ -34,7 +29,7 @@ public class CreateReminder extends Command {
 
         ZonedDateTime datetime = null;
         try {
-            datetime = ZonedDateTime.of(LocalDateTime.parse(event.getArgs().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm")), ZoneId.of("GMT+8"));
+            datetime = ZonedDateTime.of(LocalDateTime.parse(event.getArgs().trim().substring(0, 15), DateTimeFormatter.ofPattern("dd/MM/yyyy HHmm")), ZoneId.of("GMT+8"));
         } catch (DateTimeParseException dtpe) {
             event.reply("I am unable to parse the specified date. Pattern: \"dd/MM/yyyy HHmm\" " +
                     "(Eg. \"" + Settings.botCommand.getPrefix() +"remindme 30/06/2021 1300\")");
