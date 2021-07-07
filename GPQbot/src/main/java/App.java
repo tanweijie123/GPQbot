@@ -5,14 +5,19 @@ import com.jagrosh.jdautilities.command.*;
 import config.Settings;
 import event.NotesEvent;
 import event.ReactionEvent;
+import event.SlashCommand;
 import event.TextEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import scheduler.Scheduler;
 import util.Utility;
 
@@ -48,7 +53,7 @@ public class App {
             Settings.LOGGER.log(Level.INFO, "System booting up . . .");
 
             Scanner sc = new Scanner(new File("token"));
-            String token = sc.nextLine();
+            String token = sc.next();
             JDA jda = JDABuilder.create(token,
                     GatewayIntent.GUILD_MEMBERS,
                     GatewayIntent.GUILD_MESSAGES,
@@ -63,8 +68,6 @@ public class App {
             builder.setHelpWord("help");
             builder.setHelpConsumer(x -> new Help().run(x));
             builder.setEmojis(":white_check_mark:", ":warning:", ":bangbang:");
-
-            addCommands(builder);
 
             builder.setListener(new CommandListener() {
                 @Override
@@ -104,11 +107,17 @@ public class App {
                 }
             });
 
-            jda.addEventListener(new ReactionEvent(), new TextEvent(), new NotesEvent());
 
+            addCommands(builder);
             CommandClient commandClient = builder.build();
             Settings.botCommand = commandClient;
             jda.addEventListener(commandClient);
+
+            CommandListUpdateAction commands = jda.updateCommands();
+            addSlashCommands(commands);
+
+            jda.addEventListener(new ReactionEvent(), new TextEvent(), new NotesEvent(), new SlashCommand());
+
 
             Settings.LOGGER.log(Level.INFO, "Bot is ready and awaiting. . .");
             jda.awaitReady();
@@ -145,5 +154,19 @@ public class App {
 
         builder.addCommands(new AsMod());
         builder.addCommand(new PurgeTo());
+    }
+
+    private static void addSlashCommands(CommandListUpdateAction commands) {
+        commands.addCommands(
+                new CommandData("help", "Gets the user guide for Nyanbot"),
+                new CommandData("whoami", "Gets the job and floor currently stored in Nyanbot"),
+                new CommandData("floor", "updates the floor of your character")
+                    .addOption(OptionType.INTEGER, "floor_number", "your dojo floor", true),
+                new CommandData("job", "updates the job of your character")
+                    .addOption(OptionType.INTEGER, "job_number", "your job number as described in joblist", true),
+                new CommandData("joblist", "Gets the list of jobs")
+        );
+
+        commands.queue(); //required to update all added slash commands here.
     }
 }

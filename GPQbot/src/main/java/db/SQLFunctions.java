@@ -82,8 +82,8 @@ public class SQLFunctions {
         return SQLConn.getConnection().prepareStatement(query);
     }
     public static PreparedStatement insertReminder() throws SQLException {
-        String query = "INSERT INTO Reminder(gid, uid, created_date, expected_date, reminder_link, source_link) " +
-                "VALUES (?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO Reminder(gid, uid, created_date, expected_date, reminder_link) " +
+                "VALUES (?, ?, ?, ?, ?);";
         return SQLConn.getConnection().prepareStatement(query);
     }
 

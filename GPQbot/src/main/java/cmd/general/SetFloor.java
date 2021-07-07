@@ -3,8 +3,10 @@ package cmd.general;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
+import data.JobList;
 import logic.UsersMethod;
 import model.UserAccount;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class SetFloor extends Command {
 
@@ -42,6 +44,25 @@ public class SetFloor extends Command {
         UserAccount ua = UsersMethod.getOrCreateUser(event.getGuild().getId(), event.getAuthor().getId());
 
         event.reply("Hellonyaa~ This is what I have of you:\n" + ua.replyString(event.getMember().getEffectiveName()));
+
+    }
+
+
+    public void execute(SlashCommandEvent event) {
+        long floor = event.getOption("floor_number").getAsLong();
+        if (floor < 0) {
+            event.reply("Oof.. You can't even beat a snail?").queue();
+            return;
+        } else if (floor > 70) {
+            event.reply("Woahh.. You are strong. Too strong in fact.").queue();
+            return;
+        }
+
+        UsersMethod.getOrCreateUser(event.getGuild().getId(), event.getUser().getId());
+        UsersMethod.updateFloor(event.getGuild().getId(), event.getUser().getId(), Math.toIntExact(floor));
+        UserAccount ua = UsersMethod.getOrCreateUser(event.getGuild().getId(), event.getUser().getId());
+
+        event.reply("Hellonyaa~ This is what I have of you:\n" + ua.replyString(event.getMember().getEffectiveName())).setEphemeral(true).queue();
 
     }
 }

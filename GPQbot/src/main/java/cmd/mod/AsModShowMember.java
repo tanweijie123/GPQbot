@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.CommandEvent;
 import config.Settings;
 import logic.GuildMethod;
 import model.UserAccountExport;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.util.Comparator;
 import java.util.List;
@@ -20,18 +21,16 @@ public class AsModShowMember extends Command {
 
     @Override
     protected void execute(CommandEvent event) {
-        String reply = "Current Guild Members registered with NyanBot: \n";
 
-        List<UserAccountExport> uaeList = GuildMethod.getGuildMembers(event.getGuild().getId())
+        String reply = "Current Guild Members registered with NyanBot: \n" +
+                GuildMethod.getGuildMembers(event.getGuild().getId())
                 .stream()
+                .filter(x -> event.getGuild().getMemberById(x.getUserId()) != null)
                 .map(x -> new UserAccountExport(x.getGuildId(), x.getUserId(), x.getJob(), x.getFloor(), x.isRegistered(),
                         event.getGuild().getMemberById(x.getUserId()).getEffectiveName()))
                 .sorted(Comparator.comparing(UserAccountExport::getIgn))
-                .collect(Collectors.toList());
-
-        for (UserAccountExport uae : uaeList) {
-            reply += uae.toString() + "\n";
-        }
+                .map(x -> x.toString())
+                .collect(Collectors.joining("\n"));
 
         event.reply(reply);
     }
