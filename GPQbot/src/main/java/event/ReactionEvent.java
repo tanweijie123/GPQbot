@@ -58,7 +58,7 @@ public class ReactionEvent extends ListenerAdapter {
 
                     List<MessageReaction> ebReact = actualEb.getReactions();
 
-                    List<String> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> !x.isBot())
+                    List<String> usrAttending = ebReact.get(0).retrieveUsers().stream().filter(x -> event.getGuild().getMember(x) != null && !x.isBot())
                             .map(x -> x.getId())
                             .collect(Collectors.toList());
 
